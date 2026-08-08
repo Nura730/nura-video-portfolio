@@ -50,16 +50,17 @@ export default function Work() {
       });
 
       gsap.from(".featured-work-card", {
-        y: 70,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".featured-work-grid",
-          start: "top 80%",
-        },
-      });
+  y: 35,
+  opacity: 0,
+  duration: 0.8,
+  stagger: 0.12,
+  ease: "power3.out",
+  scrollTrigger: {
+    trigger: ".featured-work-grid",
+    start: "top 80%",
+    once: true,
+  },
+});
 
       gsap.from(".more-reel-card", {
         y: 40,

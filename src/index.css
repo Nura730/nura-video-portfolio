@@ -688,7 +688,7 @@ will-change: transform;
 .featured-media {
   position: relative;
 
-  min-height: 470px;
+  min-height: 400px;
 
   margin: 16px;
 
@@ -835,7 +835,7 @@ will-change: transform;
 ========================= */
 
 .more-work {
-  margin-top: 62px;
+  margin-top: 90px;
 }
 
 .more-work-label {
@@ -983,7 +983,6 @@ will-change: transform;
 
   .featured-media {
     min-height: 330px;
-
     margin: 10px;
   }
 

@@ -200,7 +200,7 @@ section {
   display: flex;
   align-items: center;
 
-  padding: 150px 6.3vw 70px;
+  padding: 185px 6.3vw 70px;
 
   overflow: hidden;
 
@@ -242,9 +242,9 @@ section {
   overflow: hidden;
 
   font-size: clamp(
-    70px,
-    8vw,
-    138px
+    58px,
+    6.2vw,
+    105px
   );
 
   font-weight: 600;
@@ -291,9 +291,9 @@ section {
   align-items: center;
   justify-content: center;
 
-  min-height: 48px;
+  min-height: 44px;
 
-  padding: 0 25px;
+  padding: 0 23px;
 
   font-size: 11px;
   font-weight: 700;
@@ -348,7 +348,7 @@ section {
 
 .hero-reel {
   width: 100%;
-  max-width: 430px;
+  max-width: 400px;
 
   justify-self: end;
 
@@ -356,11 +356,11 @@ section {
 }
 
 .reel-frame {
-  padding: 23px;
+  padding: 22px;
 
   border: 1px solid var(--border);
 
-  border-radius: 32px;
+  border-radius: 30px;
 
   background: #111113;
 }
@@ -454,9 +454,9 @@ section {
   display: flex;
   flex-direction: column;
 
-  gap: 12px;
+  gap: 10px;
 
-  margin-top: 38px;
+  margin-top: 30px;
 }
 
 .reel-info span {

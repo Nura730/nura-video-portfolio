@@ -171,11 +171,19 @@ if (primaryButton) {
           </p>
 
           <div className="hero-actions">
-            <a href="#work" className="hero-primary-button">
+            <a
+  href="#work"
+  className="hero-primary-button"
+  data-magnetic
+>
               VIEW MY WORK ↗
             </a>
 
-            <a href="#contact" className="hero-secondary-button">
+            <a
+  href="#work"
+  className="hero-primary-button"
+  data-magnetic
+>
               LET'S TALK
             </a>
           </div>
@@ -186,7 +194,10 @@ if (primaryButton) {
 
         </div>
 
-        <div className="hero-reel">
+        <div
+  className="hero-reel"
+  data-magnetic
+>
           <div className="reel-frame">
             <div className="reel-inner">
               <div className="reel-placeholder">

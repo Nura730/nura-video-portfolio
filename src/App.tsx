@@ -1,12 +1,14 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import { useLenis } from "./hooks/useLenis";
+import CustomCursor from "./components/CustomCursor";
 
 function App() {
   useLenis();
 
   return (
     <>
+    <CustomCursor />
       <Navbar />
 
       <main>

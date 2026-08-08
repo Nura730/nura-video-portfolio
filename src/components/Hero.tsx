@@ -14,64 +14,78 @@ export default function Hero() {
 
     const ctx = gsap.context(() => {
       const intro = gsap.timeline({
-        defaults: {
-          ease: "power4.out",
-        },
-      });
+  defaults: {
+    ease: "power4.out",
+  },
+});
 
-      intro
-        .from(".hero-label", {
-          y: 20,
-          opacity: 0,
-          duration: 0.6,
-        })
-        .from(
-          ".hero-title-line",
-          {
-            yPercent: 110,
-            opacity: 0,
-            duration: 0.9,
-            stagger: 0.1,
-          },
-          "-=0.25"
-        )
-        .from(
-          ".hero-description",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.7,
-          },
-          "-=0.4"
-        )
-        .from(
-          ".hero-actions",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.7,
-          },
-          "-=0.4"
-        )
-        .from(
-          ".hero-availability",
-          {
-            y: 15,
-            opacity: 0,
-            duration: 0.6,
-          },
-          "-=0.35"
-        )
-        .from(
-          ".hero-reel",
-          {
-            x: 80,
-            opacity: 0,
-            scale: 0.92,
-            duration: 1,
-          },
-          "-=0.8"
-        );
+intro
+  // Small orange label
+  .from(".hero-label", {
+    y: 30,
+    opacity: 0,
+    duration: 0.7,
+  })
+
+  // Main typography
+  .from(
+    ".hero-title-line",
+    {
+      yPercent: 120,
+      opacity: 0,
+      duration: 1.1,
+      stagger: 0.12,
+    },
+    "-=0.3"
+  )
+
+  // Description
+  .from(
+    ".hero-description",
+    {
+      y: 25,
+      opacity: 0,
+      duration: 0.8,
+    },
+    "-=0.45"
+  )
+
+  // Buttons
+  .from(
+    ".hero-actions",
+    {
+      y: 20,
+      opacity: 0,
+      duration: 0.7,
+    },
+    "-=0.45"
+  )
+
+  // Availability
+  .from(
+    ".hero-availability",
+    {
+      y: 15,
+      opacity: 0,
+      duration: 0.6,
+    },
+    "-=0.35"
+  )
+
+  // Reel card
+  .from(
+    ".hero-reel",
+    {
+      x: 100,
+      y: 20,
+      opacity: 0,
+      scale: 0.92,
+      rotate: 2,
+      duration: 1.1,
+      ease: "power3.out",
+    },
+    "-=0.9"
+  );
 
       gsap.to(".hero-content", {
         yPercent: -10,
@@ -86,6 +100,15 @@ export default function Hero() {
       });
 
       gsap.to(".hero-reel", {
+  y: -8,
+  duration: 3,
+  repeat: -1,
+  yoyo: true,
+  ease: "sine.inOut",
+  delay: 1.5,
+});
+
+      gsap.to(".hero-reel", {
         y: -40,
         ease: "none",
         scrollTrigger: {
@@ -96,6 +119,28 @@ export default function Hero() {
         },
       });
     }, hero);
+
+    const primaryButton = hero.querySelector(
+  ".hero-primary-button"
+);
+
+if (primaryButton) {
+  primaryButton.addEventListener("mouseenter", () => {
+    gsap.to(primaryButton, {
+      y: -4,
+      duration: 0.25,
+      ease: "power2.out",
+    });
+  });
+
+  primaryButton.addEventListener("mouseleave", () => {
+    gsap.to(primaryButton, {
+      y: 0,
+      duration: 0.25,
+      ease: "power2.out",
+    });
+  });
+}
 
     return () => ctx.revert();
   }, []);

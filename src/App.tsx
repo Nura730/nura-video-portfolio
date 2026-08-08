@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import { useLenis } from "./hooks/useLenis";
 import CustomCursor from "./components/CustomCursor";
+import Work from "./components/Work";
 
 function App() {
   useLenis();
@@ -13,6 +14,7 @@ function App() {
 
       <main>
         <Hero />
+        <Work />
 
         <section
           id="work"

@@ -398,6 +398,9 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateZ(20px);
+transform-style: preserve-3d;
+will-change: transform;
 }
 
 .reel-placeholder {
@@ -547,7 +550,9 @@ section {
 
 .hero-reel {
   transform-style: preserve-3d;
+  transform-origin: center center;
   will-change: transform;
+  perspective: 1000px;
 }
 .hero-primary-button,
 .hero-secondary-button {
@@ -583,4 +588,423 @@ section {
   background: #181819;
   color: #f0ede5;
   border-color: #444446;
+}
+
+/* =========================
+   WORK SECTION
+========================= */
+
+.work-section {
+  position: relative;
+
+  width: 100%;
+
+  padding: 170px 6.3vw 120px;
+
+  background: var(--bg);
+}
+
+.work-container {
+  width: 100%;
+}
+
+/* Intro */
+
+.work-intro {
+  max-width: 900px;
+}
+
+.work-label {
+  margin-bottom: 38px;
+
+  color: var(--accent);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.16em;
+}
+
+.work-heading {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: clamp(48px, 6vw, 88px);
+  font-weight: 600;
+
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.work-description {
+  max-width: 700px;
+
+  margin: 28px 0 0;
+
+  color: var(--muted);
+
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   FEATURED WORK
+========================= */
+
+.featured-work-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 32px;
+
+  margin-top: 62px;
+}
+
+.featured-work-card {
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+  border-radius: 26px;
+
+  background: #111113;
+
+  transition:
+    transform 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.featured-work-card:hover {
+  transform: translateY(-6px);
+
+  border-color: #3a3a3c;
+}
+
+
+/* Media */
+
+.featured-media {
+  position: relative;
+
+  min-height: 470px;
+
+  margin: 16px;
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  background: #1a1a1c;
+
+  overflow: hidden;
+}
+
+.featured-media::after {
+  content: "";
+
+  position: absolute;
+
+  left: 20px;
+  right: 20px;
+  top: 22px;
+
+  height: 2px;
+
+  background: var(--accent);
+}
+
+.motion-media::after {
+  background: #35d8d5;
+}
+
+
+/* Category */
+
+.featured-category {
+  position: absolute;
+
+  top: 46px;
+  left: 22px;
+
+  color: var(--accent);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.motion-media .featured-category {
+  color: #35d8d5;
+}
+
+
+/* Play */
+
+.featured-play {
+  position: absolute;
+
+  left: 22px;
+  bottom: 24px;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.featured-play:hover {
+  color: var(--accent);
+
+  transform: translateX(5px);
+}
+
+
+/* Footer */
+
+.featured-card-footer {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 8px 38px 34px;
+}
+
+.featured-card-footer h3 {
+  margin: 0 0 8px;
+
+  color: var(--text);
+
+  font-size: 27px;
+  font-weight: 600;
+
+  letter-spacing: -0.03em;
+}
+
+.featured-card-footer p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+.view-project {
+  flex-shrink: 0;
+
+  padding: 8px 0;
+
+  background: transparent;
+
+  color: var(--text);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  cursor: pointer;
+
+  transition: color 0.3s ease;
+}
+
+.view-project:hover {
+  color: var(--accent);
+}
+
+
+/* =========================
+   MORE EDITS
+========================= */
+
+.more-work {
+  margin-top: 62px;
+}
+
+.more-work-label {
+  margin-bottom: 24px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.17em;
+}
+
+.more-reels-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 24px;
+}
+
+.more-reel-card {
+  position: relative;
+
+  min-height: 205px;
+
+  padding: 24px 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  background: #111113;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.4s ease,
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+}
+
+.more-reel-card:hover {
+  transform: translateY(-5px);
+
+  border-color: #3a3a3c;
+
+  background: #151517;
+}
+
+.more-reel-number {
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.15em;
+}
+
+.more-reel-play {
+  align-self: flex-start;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.more-reel-card:hover .more-reel-play {
+  color: var(--accent);
+
+  transform: translateX(5px);
+}
+
+
+/* Divider before next section */
+
+.work-section::after {
+  content: "";
+
+  display: block;
+
+  width: 100%;
+
+  height: 1px;
+
+  margin-top: 100px;
+
+  background: var(--border);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .work-section {
+    padding: 130px 5vw 90px;
+  }
+
+  .featured-work-grid {
+    grid-template-columns: 1fr;
+
+    gap: 24px;
+  }
+
+  .more-reels-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .featured-media {
+    min-height: 420px;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .work-section {
+    padding: 110px 5vw 70px;
+  }
+
+  .work-heading {
+    font-size: clamp(42px, 12vw, 62px);
+  }
+
+  .work-description {
+    font-size: 15px;
+  }
+
+  .featured-media {
+    min-height: 330px;
+
+    margin: 10px;
+  }
+
+  .featured-card-footer {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 8px 22px 26px;
+  }
+
+  .featured-card-footer h3 {
+    font-size: 23px;
+  }
+
+  .more-reels-grid {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+  }
+
+  .more-reel-card {
+    min-height: 160px;
+  }
 }

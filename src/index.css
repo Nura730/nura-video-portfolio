@@ -279,56 +279,75 @@ section {
 .hero-actions {
   display: flex;
   align-items: center;
-
   gap: 14px;
-
-  margin-top: 38px;
 }
 
-.hero-primary-button,
+.hero-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 44px;
+  padding: 0 26px;
+
+  background: #ff5a00;
+  color: #0a0a0a;
+
+  border: 1px solid #ff5a00;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
 .hero-secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 
   min-height: 44px;
+  padding: 0 26px;
 
-  padding: 0 23px;
+  background: transparent;
+  color: #9b9995;
 
-  font-size: 11px;
+  border: 1px solid #303030;
+  border-radius: 999px;
+
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 
-  letter-spacing: 0.1em;
+  text-decoration: none;
 
   transition:
-    transform 0.3s ease,
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-.hero-primary-button {
-  background: var(--accent);
-
-  color: #09090a;
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .hero-primary-button:hover {
-  transform: translateY(-4px);
-  background: #ff7733;
-}
-
-.hero-secondary-button {
-  border: 1px solid var(--border);
-
-  color: var(--muted);
+  background: #ff6a1a;
+  border-color: #ff6a1a;
+  color: #0a0a0a;
 }
 
 .hero-secondary-button:hover {
-  transform: translateY(-4px);
-
-  color: var(--text);
-
-  border-color: var(--muted);
+  background: #171717;
+  border-color: #555;
+  color: #f2eee7;
 }
 
 /* Availability */
@@ -533,4 +552,35 @@ section {
 .hero-primary-button,
 .hero-secondary-button {
   will-change: transform;
+}
+
+.hero-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+  padding: 0 26px;
+
+  background: #111113;
+  color: #8f8c8a;
+
+  border: 1px solid #29292b;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.hero-secondary-button:hover {
+  background: #181819;
+  color: #f0ede5;
+  border-color: #444446;
 }

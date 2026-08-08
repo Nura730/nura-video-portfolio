@@ -174,14 +174,13 @@ if (primaryButton) {
             <a
   href="#work"
   className="hero-primary-button"
-  data-magnetic
 >
               VIEW MY WORK ↗
             </a>
 
             <a
   href="#work"
-  className="hero-primary-button"
+  className="hero-secondary-button"
   data-magnetic
 >
               LET'S TALK

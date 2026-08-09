@@ -2313,3 +2313,46 @@ will-change: transform;
     gap: 15px;
   }
 }
+
+/* =========================
+   SERVICES MOTION
+========================= */
+
+.service-row {
+  position: relative;
+
+  will-change: transform;
+
+  overflow: hidden;
+}
+
+.service-row::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 1px;
+
+  background: var(--accent);
+
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.service-row:hover::before {
+  width: 100%;
+}
+
+.service-number,
+.service-name,
+.service-description,
+.service-arrow {
+  will-change: transform;
+}
+
+.service-arrow {
+  transform-origin: center;
+}

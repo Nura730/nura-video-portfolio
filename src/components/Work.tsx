@@ -15,63 +15,183 @@ export default function Work() {
     if (!work) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(".work-label", {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
+      // ─────────────────────────────
+      // SECTION REVEAL
+      // ─────────────────────────────
+
+      const intro = gsap.timeline({
         scrollTrigger: {
           trigger: work,
-          start: "top 75%",
+          start: "top 72%",
+          toggleActions: "play none none reverse",
+        },
+        defaults: {
+          ease: "power4.out",
         },
       });
 
-      gsap.from(".work-heading", {
-        y: 60,
-        opacity: 0,
-        duration: 1,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: work,
-          start: "top 70%",
-        },
-      });
+      intro
+        .from(".work-label", {
+          y: 25,
+          opacity: 0,
+          duration: 0.7,
+        })
 
-      gsap.from(".work-description", {
-        y: 25,
-        opacity: 0,
-        duration: 0.7,
-        delay: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: work,
-          start: "top 70%",
-        },
-      });
+        .from(
+          ".work-heading",
+          {
+            y: 70,
+            opacity: 0,
+            duration: 1,
+          },
+          "-=0.35"
+        )
+
+        .from(
+          ".work-description",
+          {
+            y: 25,
+            opacity: 0,
+            duration: 0.7,
+          },
+          "-=0.55"
+        );
+
+      // ─────────────────────────────
+      // FEATURED CARDS REVEAL
+      // ─────────────────────────────
 
       gsap.from(".featured-work-card", {
-  y: 35,
-  opacity: 0,
-  duration: 0.8,
-  stagger: 0.12,
-  ease: "power3.out",
-  scrollTrigger: {
-    trigger: ".featured-work-grid",
-    start: "top 80%",
-    once: true,
-  },
-});
+        y: 80,
+        opacity: 0,
+        scale: 0.94,
+        duration: 1,
+        stagger: 0.16,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".featured-work-grid",
+          start: "top 82%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // ─────────────────────────────
+      // MORE REELS REVEAL
+      // ─────────────────────────────
 
       gsap.from(".more-reel-card", {
-        y: 40,
+        y: 50,
         opacity: 0,
-        duration: 0.7,
+        scale: 0.95,
+        duration: 0.75,
         stagger: 0.1,
         ease: "power3.out",
         scrollTrigger: {
           trigger: ".more-reels-grid",
           start: "top 85%",
+          toggleActions: "play none none reverse",
         },
+      });
+
+      // ─────────────────────────────
+      // FEATURED CARD MOUSE TILT
+      // ─────────────────────────────
+
+      const cards =
+        work.querySelectorAll<HTMLElement>(".featured-work-card");
+
+      cards.forEach((card) => {
+        const media =
+          card.querySelector<HTMLElement>(".featured-media");
+
+        const play =
+          card.querySelector<HTMLElement>(".featured-play");
+
+        if (!media) return;
+
+        const handleMove = (event: MouseEvent) => {
+          const rect = card.getBoundingClientRect();
+
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          const rotateY =
+            ((x - centerX) / centerX) * 4;
+
+          const rotateX =
+            ((centerY - y) / centerY) * 4;
+
+          gsap.to(card, {
+            rotateX,
+            rotateY,
+            y: -6,
+            duration: 0.45,
+            ease: "power3.out",
+            overwrite: true,
+          });
+
+          gsap.to(media, {
+            x: ((x - centerX) / centerX) * -6,
+            y: ((y - centerY) / centerY) * -6,
+            scale: 1.015,
+            duration: 0.45,
+            ease: "power3.out",
+            overwrite: true,
+          });
+
+          if (play) {
+            gsap.to(play, {
+              scale: 1.08,
+              x: ((x - centerX) / centerX) * 3,
+              y: ((y - centerY) / centerY) * 3,
+              duration: 0.35,
+              ease: "power3.out",
+              overwrite: true,
+            });
+          }
+        };
+
+        const handleLeave = () => {
+          gsap.to(card, {
+            rotateX: 0,
+            rotateY: 0,
+            y: 0,
+            duration: 0.7,
+            ease: "elastic.out(1, 0.55)",
+            overwrite: true,
+          });
+
+          gsap.to(media, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            overwrite: true,
+          });
+
+          if (play) {
+            gsap.to(play, {
+              scale: 1,
+              x: 0,
+              y: 0,
+              duration: 0.5,
+              ease: "power3.out",
+              overwrite: true,
+            });
+          }
+        };
+
+        card.addEventListener("mousemove", handleMove);
+        card.addEventListener("mouseleave", handleLeave);
+
+        return () => {
+          card.removeEventListener("mousemove", handleMove);
+          card.removeEventListener("mouseleave", handleLeave);
+        };
       });
     }, work);
 
@@ -87,6 +207,7 @@ export default function Work() {
       <div className="work-container">
 
         {/* SECTION INTRO */}
+
         <div className="work-intro">
 
           <div className="work-label">
@@ -100,34 +221,48 @@ export default function Work() {
           </h2>
 
           <p className="work-description">
-            A focused collection of edits for travel, creators and social content.
+            A focused collection of edits for travel, creators
+            and social content.
           </p>
 
         </div>
 
         {/* FEATURED WORK */}
+
         <div className="featured-work-grid">
 
           {/* TRIPXPLO */}
-          <article className="featured-work-card">
+
+          <article className="featured-work-card tripxplo-card">
 
             <div className="featured-media travel-media">
+
               <span className="featured-category">
-                TRAVEL
+                TRAVEL / SOCIAL
               </span>
 
               <button
                 className="featured-play"
                 type="button"
+                aria-label="Play TripXplo reel"
               >
-                PLAY ↗
+                <span className="play-icon">
+                  ▶
+                </span>
+
+                <span>
+                  PLAY REEL
+                </span>
               </button>
+
             </div>
 
             <div className="featured-card-footer">
 
               <div>
-                <h3>TripXplo</h3>
+                <h3>
+                  TripXplo
+                </h3>
 
                 <p>
                   Travel reels • Instagram • short-form
@@ -146,25 +281,37 @@ export default function Work() {
           </article>
 
           {/* KAVITHAI */}
-          <article className="featured-work-card">
+
+          <article className="featured-work-card kavithai-card">
 
             <div className="featured-media motion-media">
+
               <span className="featured-category">
-                MOTION
+                TEXT / MOTION
               </span>
 
               <button
                 className="featured-play"
                 type="button"
+                aria-label="Play Kavithai edit"
               >
-                PLAY ↗
+                <span className="play-icon">
+                  ▶
+                </span>
+
+                <span>
+                  PLAY REEL
+                </span>
               </button>
+
             </div>
 
             <div className="featured-card-footer">
 
               <div>
-                <h3>Kavithai</h3>
+                <h3>
+                  Kavithai
+                </h3>
 
                 <p>
                   Typography • text animation • social
@@ -185,6 +332,7 @@ export default function Work() {
         </div>
 
         {/* MORE EDITS */}
+
         <div className="more-work">
 
           <div className="more-work-label">

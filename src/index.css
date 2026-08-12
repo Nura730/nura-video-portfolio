@@ -656,9 +656,9 @@ will-change: transform;
 .featured-work-grid {
   display: grid;
 
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap: 32px;
+  gap: 24px;
 
   margin-top: 62px;
 
@@ -708,9 +708,15 @@ will-change: transform;
 /* Media */
 
 .featured-media {
+  isolation: isolate;
+
+  background: #111113;
+
   position: relative;
 
-  min-height: 400px;
+  aspect-ratio: 9 / 16;
+
+min-height: 0;
 
   margin: 16px;
 
@@ -733,6 +739,30 @@ will-change: transform;
   will-change: transform;
 }
 
+.featured-video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  border-radius: inherit;
+
+  z-index: 0;
+
+  opacity: 0.92;
+
+  pointer-events: none;
+}
+
+.featured-media > .featured-category,
+.featured-media > .featured-play {
+  z-index: 2;
+}
+
 .motion-media {
   background:
     radial-gradient(
@@ -744,6 +774,7 @@ will-change: transform;
 }
 
 .featured-media::after {
+  z-index: 1;
   content: "";
 
   position: absolute;
@@ -762,6 +793,7 @@ will-change: transform;
 }
 
 .featured-media::before {
+  z-index: 1;
   content: "";
 
   position: absolute;
@@ -829,6 +861,10 @@ will-change: transform;
   align-items: center;
   gap: 12px;
 
+  min-height: 42px;
+
+  padding-left: 0;
+
   padding: 0;
 
   background: transparent;
@@ -863,6 +899,45 @@ will-change: transform;
     border-color 0.35s ease,
     color 0.35s ease;
 }
+
+
+.play-progress {
+  position: absolute;
+
+  width: 42px;
+  height: 42px;
+
+  left: 0;
+  top: 0;
+
+  transform: rotate(-90deg);
+
+  pointer-events: none;
+}
+
+.play-progress-track,
+.play-progress-ring {
+  fill: none;
+
+  stroke-width: 1.5;
+}
+
+.play-progress-track {
+  stroke: rgba(240, 237, 229, 0.18);
+}
+
+.play-progress-ring {
+  stroke: var(--accent);
+
+  stroke-linecap: round;
+
+  transition: stroke-dashoffset 0.08s linear;
+}
+
+.kavithai-card .play-progress-ring {
+  stroke: #35d8d5;
+}
+
 
 .tripxplo-card .play-icon {
   border-color: rgba(255, 99, 20, 0.7);
@@ -1008,52 +1083,122 @@ will-change: transform;
 .more-reel-card {
   position: relative;
 
-  min-height: 205px;
-
-  padding: 24px 20px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  height: 300px;
 
   border: 1px solid var(--border);
   border-radius: 18px;
 
   background: #111113;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.4s ease,
-    border-color 0.4s ease,
-    background-color 0.4s ease;
-}
-
-.more-reel-card {
-  position: relative;
-
-  min-height: 205px;
-
-  padding: 24px 20px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  border: 1px solid var(--border);
-  border-radius: 18px;
-
-  background: #111113;
-
-  cursor: pointer;
 
   overflow: hidden;
+
+  cursor: pointer;
 
   transition:
     transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.4s ease,
     background-color 0.4s ease,
     box-shadow 0.4s ease;
+}
+
+.more-reel-video {
+  position: absolute;
+
+  top: 0;
+  left: 50%;
+
+  height: 100%;
+  width: auto;
+
+  aspect-ratio: 9 / 16;
+
+  transform: translateX(-50%);
+
+  object-fit: cover;
+
+  opacity: 0.9;
+
+  pointer-events: none;
+}
+
+.more-reel-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.05) 45%,
+      rgba(0, 0, 0, 0.8)
+    );
+
+  pointer-events: none;
+}
+
+.more-reel-content {
+  position: absolute;
+
+  inset: 0;
+
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  z-index: 2;
+}
+
+.more-reel-number {
+  color: #f0ede5;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+}
+
+.more-reel-play {
+  align-self: flex-start;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #f0ede5;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.more-reel-card:hover {
+  transform: translateY(-8px);
+
+  border-color: rgba(255, 99, 20, 0.35);
+
+  background: #151517;
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 99, 20, 0.05);
+}
+
+.more-reel-card:hover .more-reel-play {
+  color: var(--accent);
+
+  transform: translateX(5px);
 }
 
 .more-reel-card:hover {

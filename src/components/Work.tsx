@@ -91,7 +91,38 @@ export default function Work() {
         const play =
           card.querySelector<HTMLElement>(".featured-play");
 
-        if (!media) return;
+        const video =
+          card.querySelector<HTMLVideoElement>(".featured-video");
+        
+        const progressRing =
+  card.querySelector<SVGCircleElement>(".play-progress-ring");
+
+        if (!media || !video || !play) return;
+
+        if (!progressRing) return;
+
+const circumference = 2 * Math.PI * 19;
+
+progressRing.style.strokeDasharray = `${circumference}`;
+progressRing.style.strokeDashoffset = `${circumference}`;
+
+const updateProgress = () => {
+  if (!video.duration || !Number.isFinite(video.duration)) return;
+
+  const progress =
+    video.currentTime / video.duration;
+
+  const offset =
+    circumference * (1 - progress);
+
+  progressRing.style.strokeDashoffset =
+    `${offset}`;
+};
+
+video.addEventListener("timeupdate", updateProgress);
+video.addEventListener("loadedmetadata", updateProgress);
+
+
 
         const handleMove = (event: MouseEvent) => {
           const rect = card.getBoundingClientRect();
@@ -172,9 +203,12 @@ export default function Work() {
         card.addEventListener("mousemove", handleMove);
         card.addEventListener("mouseleave", handleLeave);
 
-        return () => {
+                return () => {
           card.removeEventListener("mousemove", handleMove);
           card.removeEventListener("mouseleave", handleLeave);
+          video.removeEventListener("timeupdate", updateProgress);
+video.removeEventListener("loadedmetadata", updateProgress);
+
         };
       });
     }, work);
@@ -206,79 +240,188 @@ export default function Work() {
           </p>
         </div>
 
-        <div className="featured-work-grid">
-          {featuredWork.map((item) => (
-            <article
-              className="featured-work-card"
-              key={item.id}
-            >
-              <div className="featured-media">
-                <span className="featured-category">
-                  {item.category}
-                </span>
+        {/* FEATURED WORK */}
 
-                <button
-                  className="featured-play"
-                  type="button"
-                  aria-label={`Play ${item.title}`}
-                >
-                  <span className="play-icon">
-                    ▶
-                  </span>
+<div className="featured-work-grid">
 
-                  <span>
-                    PLAY REEL
-                  </span>
-                </button>
-              </div>
+  {featuredWork.map((item) => (
+    <article
+      className={`featured-work-card ${item.id}-card`}
+      key={item.id}
+    >
+      <div className="featured-media">
 
-              <div className="featured-card-footer">
-                <div>
-                  <h3>
-                    {item.title}
-                  </h3>
+        <video
+  className="featured-video"
+  src={item.video}
+  muted
+  loop
+  playsInline
+  preload="metadata"
+  aria-label={item.title}
+/>
 
-                  <p>
-                    {item.client} • {item.category}
-                  </p>
-                </div>
+        <span className="featured-category">
+          {item.category}
+        </span>
 
-                <button
-                  className="view-project"
-                  type="button"
-                >
-                  VIEW PROJECT ↗
-                </button>
-              </div>
-            </article>
-          ))}
+       <button
+  className="featured-play"
+  type="button"
+  aria-label={`Play ${item.title} reel`}
+  onClick={(event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const card = button.closest(".featured-work-card");
+
+    const video = card?.querySelector(
+      ".featured-video"
+    ) as HTMLVideoElement | null;
+
+    if (!video) return;
+
+    if (video.paused) {
+      video.play();
+
+      const label = button.querySelector(".play-label");
+      const icon = button.querySelector(".play-icon");
+
+      if (label) label.textContent = "PAUSE REEL";
+      if (icon) icon.textContent = "Ⅱ";
+    } else {
+      video.pause();
+
+      const label = button.querySelector(".play-label");
+      const icon = button.querySelector(".play-icon");
+
+      if (label) label.textContent = "PLAY REEL";
+      if (icon) icon.textContent = "▶";
+    }
+  }}
+>
+  <svg
+    className="play-progress"
+    viewBox="0 0 42 42"
+    aria-hidden="true"
+  >
+    <circle
+      className="play-progress-track"
+      cx="21"
+      cy="21"
+      r="19"
+    />
+
+    <circle
+      className="play-progress-ring"
+      cx="21"
+      cy="21"
+      r="19"
+    />
+  </svg>
+
+  <span className="play-icon">
+    ▶
+  </span>
+
+  <span className="play-label">
+    PLAY REEL
+  </span>
+</button>
+
+      </div>
+
+      <div className="featured-card-footer">
+
+        <div>
+          <h3>
+            {item.title}
+          </h3>
+
+          <p>
+            {item.client} • {item.category}
+          </p>
         </div>
 
-        <div className="more-work">
-          <div className="more-work-label">
-            MORE EDITS
-          </div>
+        <button
+          className="view-project"
+          type="button"
+        >
+          VIEW PROJECT ↗
+        </button>
 
-          <div className="more-reels-grid">
-            {moreWork.map((item) => (
-              <article
-                className="more-reel-card"
-                key={item.id}
-              >
-                <span className="more-reel-number">
-                  {item.title}
-                </span>
+      </div>
+    </article>
+  ))}
 
-                <button
-                  className="more-reel-play"
-                  type="button"
-                >
-                  PLAY ▶
-                </button>
-              </article>
-            ))}
-          </div>
+</div>
+       {/* MORE EDITS */}
+
+<div className="more-work">
+
+  <div className="more-work-label">
+    MORE EDITS
+  </div>
+
+  <div className="more-reels-grid">
+
+    {moreWork.map((item) => (
+      <article
+        className="more-reel-card"
+        key={item.id}
+      >
+        <video
+          className="more-reel-video"
+          src={item.video}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+
+        <div className="more-reel-overlay" />
+
+        <div className="more-reel-content">
+
+          <span className="more-reel-number">
+            {item.title}
+          </span>
+
+          <button
+  className="more-reel-play"
+  type="button"
+  onClick={(event) => {
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const card = button.closest(".more-reel-card");
+
+    const video = card?.querySelector(
+      ".more-reel-video"
+    ) as HTMLVideoElement | null;
+
+    if (!video) return;
+
+    if (video.paused) {
+      video.play();
+      button.textContent = "PAUSE ❚❚";
+    } else {
+      video.pause();
+      button.textContent = "PLAY ▶";
+    }
+  }}
+>
+  PLAY ▶
+</button>
+
         </div>
+      </article>
+    ))}
+
+  </div>
+
+</div>
       </div>
     </section>
   );

@@ -1,10 +1,12 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { workItems } from "../data/work";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const moreReels = ["REEL 01", "REEL 02", "REEL 03", "REEL 04"];
+const featuredWork = workItems.filter((item) => item.featured);
+const moreWork = workItems.filter((item) => !item.featured);
 
 export default function Work() {
   const workRef = useRef<HTMLElement | null>(null);
@@ -15,10 +17,6 @@ export default function Work() {
     if (!work) return;
 
     const ctx = gsap.context(() => {
-      // ─────────────────────────────
-      // SECTION REVEAL
-      // ─────────────────────────────
-
       const intro = gsap.timeline({
         scrollTrigger: {
           trigger: work,
@@ -36,7 +34,6 @@ export default function Work() {
           opacity: 0,
           duration: 0.7,
         })
-
         .from(
           ".work-heading",
           {
@@ -46,7 +43,6 @@ export default function Work() {
           },
           "-=0.35"
         )
-
         .from(
           ".work-description",
           {
@@ -56,10 +52,6 @@ export default function Work() {
           },
           "-=0.55"
         );
-
-      // ─────────────────────────────
-      // FEATURED CARDS REVEAL
-      // ─────────────────────────────
 
       gsap.from(".featured-work-card", {
         y: 80,
@@ -75,10 +67,6 @@ export default function Work() {
         },
       });
 
-      // ─────────────────────────────
-      // MORE REELS REVEAL
-      // ─────────────────────────────
-
       gsap.from(".more-reel-card", {
         y: 50,
         opacity: 0,
@@ -92,10 +80,6 @@ export default function Work() {
           toggleActions: "play none none reverse",
         },
       });
-
-      // ─────────────────────────────
-      // FEATURED CARD MOUSE TILT
-      // ─────────────────────────────
 
       const cards =
         work.querySelectorAll<HTMLElement>(".featured-work-card");
@@ -205,11 +189,7 @@ export default function Work() {
       ref={workRef}
     >
       <div className="work-container">
-
-        {/* SECTION INTRO */}
-
         <div className="work-intro">
-
           <div className="work-label">
             01 / SELECTED WORK
           </div>
@@ -224,130 +204,69 @@ export default function Work() {
             A focused collection of edits for travel, creators
             and social content.
           </p>
-
         </div>
-
-        {/* FEATURED WORK */}
 
         <div className="featured-work-grid">
-
-          {/* TRIPXPLO */}
-
-          <article className="featured-work-card tripxplo-card">
-
-            <div className="featured-media travel-media">
-
-              <span className="featured-category">
-                TRAVEL / SOCIAL
-              </span>
-
-              <button
-                className="featured-play"
-                type="button"
-                aria-label="Play TripXplo reel"
-              >
-                <span className="play-icon">
-                  ▶
+          {featuredWork.map((item) => (
+            <article
+              className="featured-work-card"
+              key={item.id}
+            >
+              <div className="featured-media">
+                <span className="featured-category">
+                  {item.category}
                 </span>
 
-                <span>
-                  PLAY REEL
-                </span>
-              </button>
+                <button
+                  className="featured-play"
+                  type="button"
+                  aria-label={`Play ${item.title}`}
+                >
+                  <span className="play-icon">
+                    ▶
+                  </span>
 
-            </div>
-
-            <div className="featured-card-footer">
-
-              <div>
-                <h3>
-                  TripXplo
-                </h3>
-
-                <p>
-                  Travel reels • Instagram • short-form
-                </p>
+                  <span>
+                    PLAY REEL
+                  </span>
+                </button>
               </div>
 
-              <button
-                className="view-project"
-                type="button"
-              >
-                VIEW PROJECT ↗
-              </button>
+              <div className="featured-card-footer">
+                <div>
+                  <h3>
+                    {item.title}
+                  </h3>
 
-            </div>
+                  <p>
+                    {item.client} • {item.category}
+                  </p>
+                </div>
 
-          </article>
-
-          {/* KAVITHAI */}
-
-          <article className="featured-work-card kavithai-card">
-
-            <div className="featured-media motion-media">
-
-              <span className="featured-category">
-                TEXT / MOTION
-              </span>
-
-              <button
-                className="featured-play"
-                type="button"
-                aria-label="Play Kavithai edit"
-              >
-                <span className="play-icon">
-                  ▶
-                </span>
-
-                <span>
-                  PLAY REEL
-                </span>
-              </button>
-
-            </div>
-
-            <div className="featured-card-footer">
-
-              <div>
-                <h3>
-                  Kavithai
-                </h3>
-
-                <p>
-                  Typography • text animation • social
-                </p>
+                <button
+                  className="view-project"
+                  type="button"
+                >
+                  VIEW PROJECT ↗
+                </button>
               </div>
-
-              <button
-                className="view-project"
-                type="button"
-              >
-                VIEW PROJECT ↗
-              </button>
-
-            </div>
-
-          </article>
-
+            </article>
+          ))}
         </div>
 
-        {/* MORE EDITS */}
-
         <div className="more-work">
-
           <div className="more-work-label">
             MORE EDITS
           </div>
 
           <div className="more-reels-grid">
-
-            {moreReels.map((reel) => (
+            {moreWork.map((item) => (
               <article
                 className="more-reel-card"
-                key={reel}
+                key={item.id}
               >
                 <span className="more-reel-number">
-                  {reel}
+                  {item.title}
                 </span>
 
                 <button
@@ -358,11 +277,8 @@ export default function Work() {
                 </button>
               </article>
             ))}
-
           </div>
-
         </div>
-
       </div>
     </section>
   );

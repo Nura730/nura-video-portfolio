@@ -10,29 +10,38 @@ const services = [
     title: "SHORT-FORM VIDEO",
     meta: "REELS • SHORTS • VERTICAL",
     description:
-      "Fast, engaging edits built around hooks, pacing, captions, music and retention.",
+      "Sharp, fast-paced edits built around strong hooks, clean captions, sound and viewer retention.",
   },
   {
     number: "02",
     title: "LONG-FORM VIDEO",
     meta: "YOUTUBE • INTERVIEWS • EXPLAINERS",
     description:
-      "Structured edits that keep longer videos clear, engaging and easy to follow.",
+      "Structured edits that keep longer videos clear, engaging and easy to follow from start to finish.",
   },
   {
     number: "03",
     title: "SOCIAL & CREATOR CONTENT",
     meta: "CREATORS • BRANDS • SOCIAL",
     description:
-      "Platform-ready content shaped around the audience, format and personality of the creator.",
+      "Content shaped around your voice, audience and platform — without losing the personality behind it.",
   },
   {
     number: "04",
     title: "MOTION & VISUAL EDITING",
     meta: "TYPOGRAPHY • CAPTIONS • MOTION",
     description:
-      "Typography, animated captions, transitions and motion graphics that give the edit personality.",
+      "Typography, animated captions, transitions and visual details that give the edit more energy and identity.",
   },
+];
+
+const editingFocus = [
+  "HOOKS",
+  "PACING",
+  "SOUND",
+  "CAPTIONS",
+  "MOTION",
+  "STORY",
 ];
 
 export default function Services() {
@@ -105,7 +114,24 @@ export default function Services() {
       });
 
       // --------------------------------
-      // HOVER INTERACTION
+      // FOCUS STRIP REVEAL
+      // --------------------------------
+
+      gsap.from(".services-focus", {
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".services-focus",
+          start: "top 88%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // --------------------------------
+      // EXISTING HOVER INTERACTION
+      // DO NOT CHANGE
       // --------------------------------
 
       rows.forEach((row) => {
@@ -274,6 +300,7 @@ export default function Services() {
       ref={sectionRef}
     >
       <div className="services-container">
+
         {/* INTRO */}
 
         <div className="services-intro">
@@ -282,15 +309,15 @@ export default function Services() {
           </div>
 
           <h2 className="services-title">
-            Video editing
+            Editing that makes
             <br />
-            built around the story.
+            content work harder.
           </h2>
 
           <p className="services-description">
-            From short-form content to longer videos, I turn raw
-            footage into clean, engaging edits with the right
-            pacing, visuals, sound and motion.
+            I shape raw footage into clear, engaging edits built
+            around attention, story and the way people actually
+            watch content.
           </p>
         </div>
 
@@ -333,6 +360,31 @@ export default function Services() {
             </article>
           ))}
         </div>
+
+        {/* EDITING FOCUS */}
+
+        <div className="services-focus">
+          <div className="services-focus-label">
+            EVERY EDIT STARTS WITH
+          </div>
+
+          <div className="services-focus-items">
+            {editingFocus.map((item, index) => (
+              <span
+                className="services-focus-item"
+                key={item}
+              >
+                {item}
+                {index !== editingFocus.length - 1 && (
+                  <span className="services-focus-dot">
+                    •
+                  </span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );

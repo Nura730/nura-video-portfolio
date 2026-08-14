@@ -25,14 +25,14 @@ export default function Work() {
   const featuredVideoRefs =
     useRef<Record<string, HTMLVideoElement | null>>({});
 
-const moreCardVideoRefs =
-  useRef<Record<string, HTMLVideoElement | null>>({});
+  const moreCardVideoRefs =
+    useRef<Record<string, HTMLVideoElement | null>>({});
 
-const expandedVideoRef =
-  useRef<HTMLVideoElement | null>(null);
+  const expandedVideoRef =
+    useRef<HTMLVideoElement | null>(null);
 
-const activeVideoRef =
-  useRef<HTMLVideoElement | null>(null);
+  const activeVideoRef =
+    useRef<HTMLVideoElement | null>(null);
 
   /*
    * ============================================================
@@ -49,6 +49,40 @@ const activeVideoRef =
   const [expandedReel, setExpandedReel] =
     useState<string | null>(null);
 
+  const [showAllMoreWork, setShowAllMoreWork] =
+    useState(false);
+
+  /*
+   * ============================================================
+   * CURATED MORE EDITS PREVIEW
+   * ============================================================
+   *
+   * Only these reels appear initially.
+   * "VIEW ALL EDITS" reveals the complete collection.
+   */
+
+  const previewMoreWorkIds = [
+    "tripxplo-03",
+    "personal-13",
+    "personal-09",
+    "tripxplo-01",
+    "college-14",
+    "personal-07",
+  ];
+
+  const previewMoreWork = previewMoreWorkIds
+    .map((id) =>
+      moreWork.find((item) => item.id === id)
+    )
+    .filter(
+      (item): item is (typeof moreWork)[number] =>
+        Boolean(item)
+    );
+
+  const visibleMoreWork = showAllMoreWork
+    ? moreWork
+    : previewMoreWork;
+
   const [moreReelPlaying, setMoreReelPlaying] =
     useState(false);
 
@@ -61,32 +95,38 @@ const activeVideoRef =
    * ============================================================
    */
 
-  const stopAllVideos = () => {
-  Object.values(featuredVideoRefs.current).forEach((video) => {
-    if (!video) return;
+  const stopAllVideos = (
+    except?: HTMLVideoElement
+  ) => {
+    Object.values(
+      featuredVideoRefs.current
+    ).forEach((video) => {
+      if (!video || video === except) return;
 
-    video.pause();
-    video.muted = true;
-  });
+      video.pause();
+      video.muted = true;
+    });
 
-  Object.values(moreCardVideoRefs.current).forEach((video) => {
-    if (!video) return;
+    Object.values(
+      moreCardVideoRefs.current
+    ).forEach((video) => {
+      if (!video) return;
 
-    video.pause();
-    video.muted = true;
-  });
+      video.pause();
+      video.muted = true;
+    });
 
-  if (expandedVideoRef.current) {
-    expandedVideoRef.current.pause();
-    expandedVideoRef.current.muted = true;
-    expandedVideoRef.current.currentTime = 0;
-  }
+    if (expandedVideoRef.current) {
+      expandedVideoRef.current.pause();
+      expandedVideoRef.current.muted = true;
+      expandedVideoRef.current.currentTime = 0;
+    }
 
-  activeVideoRef.current = null;
+    activeVideoRef.current = null;
 
-  setPlayingFeatured(null);
-  setMoreReelPlaying(false);
-};
+    setPlayingFeatured(null);
+    setMoreReelPlaying(false);
+  };
 
   /*
    * ============================================================
@@ -131,6 +171,7 @@ const activeVideoRef =
     /*
      * Currently playing -> pause
      */
+
     if (!video.paused) {
       video.pause();
       video.muted = true;
@@ -146,15 +187,19 @@ const activeVideoRef =
     /*
      * Stop every other video.
      */
+
     stopAllVideos(video);
 
     /*
      * If a More Reel viewer is open,
      * close it before starting this reel.
      */
+
     if (expandedReel) {
       const moreVideo =
-        moreVideoRefs.current[expandedReel];
+        moreCardVideoRefs.current[
+          expandedReel
+        ];
 
       if (moreVideo) {
         moreVideo.pause();
@@ -171,6 +216,7 @@ const activeVideoRef =
      * User explicitly clicked Play,
      * so attempt audio playback.
      */
+
     video.muted = false;
 
     try {
@@ -185,6 +231,7 @@ const activeVideoRef =
        * if audio playback is blocked,
        * play muted instead.
        */
+
       console.warn(
         `Audio playback failed for "${id}". Retrying muted.`,
         error
@@ -216,67 +263,142 @@ const activeVideoRef =
    */
 
   const openMoreReel = (id: string) => {
-  const cardVideo = moreCardVideoRefs.current[id];
+    const cardVideo =
+      moreCardVideoRefs.current[id];
 
-  if (!cardVideo) return;
+    if (!cardVideo) return;
 
-  // Stop EVERYTHING first.
-  stopAllVideos();
+    // Stop EVERYTHING first.
+    stopAllVideos();
 
-  // The card preview must never continue playing.
-  cardVideo.pause();
-  cardVideo.muted = true;
-  cardVideo.currentTime = 0;
+    // The card preview must never continue playing.
+    cardVideo.pause();
+    cardVideo.muted = true;
+    cardVideo.currentTime = 0;
 
-  // Open popup.
-  setExpandedReel(id);
+    // Open popup.
+    setExpandedReel(id);
 
-  // Popup starts with sound enabled.
-  setMoreReelMuted(false);
-  setMoreReelPlaying(false);
-};
+    // Popup starts with sound enabled.
+    setMoreReelMuted(false);
+    setMoreReelPlaying(false);
+  };
 
+  /*
+   * ============================================================
+   * OPENED REEL AUTOPLAY
+   * ============================================================
+   */
 
-useEffect(() => {
-  if (!expandedReel) return;
+  useEffect(() => {
+    if (!expandedReel) return;
 
-  const timer = window.setTimeout(async () => {
-    const video = expandedVideoRef.current;
+    const timer = window.setTimeout(
+      async () => {
+        const video =
+          expandedVideoRef.current;
 
-    if (!video) return;
+        if (!video) return;
 
-    // Defensive cleanup.
-    Object.values(featuredVideoRefs.current).forEach((item) => {
-      if (!item) return;
+        // Defensive cleanup.
+        Object.values(
+          featuredVideoRefs.current
+        ).forEach((item) => {
+          if (!item) return;
 
-      item.pause();
-      item.muted = true;
-    });
+          item.pause();
+          item.muted = true;
+        });
 
-    Object.values(moreCardVideoRefs.current).forEach((item) => {
-      if (!item) return;
+        Object.values(
+          moreCardVideoRefs.current
+        ).forEach((item) => {
+          if (!item) return;
 
-      item.pause();
-      item.muted = true;
-    });
+          item.pause();
+          item.muted = true;
+        });
 
-    // Popup is the ONLY active video.
-    video.muted = false;
+        // Popup is the ONLY active video.
+        video.muted = false;
 
-    try {
-      await video.play();
+        try {
+          await video.play();
 
-      activeVideoRef.current = video;
+          activeVideoRef.current = video;
 
-      setMoreReelPlaying(true);
-      setMoreReelMuted(false);
-    } catch (error) {
-      console.warn(
-        "Popup audio autoplay blocked. Falling back to muted playback.",
-        error
-      );
+          setMoreReelPlaying(true);
+          setMoreReelMuted(false);
+        } catch (error) {
+          console.warn(
+            "Popup audio autoplay blocked. Falling back to muted playback.",
+            error
+          );
 
-      video.muted = true;
+          video.muted = true;
+
+          try {
+            await video.play();
+
+            activeVideoRef.current = video;
+
+            setMoreReelPlaying(true);
+            setMoreReelMuted(true);
+          } catch (playError) {
+            console.error(
+              "Popup reel could not play:",
+              playError
+            );
+
+            setMoreReelPlaying(false);
+          }
+        }
+      },
+      0
+    );
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [expandedReel]);
+
+  /*
+   * ============================================================
+   * MORE REEL PLAY / PAUSE
+   * ============================================================
+   */
+
+  const toggleMoreReelPlayback =
+    async () => {
+      const video =
+        expandedVideoRef.current;
+
+      if (!video) return;
+
+      if (!video.paused) {
+        video.pause();
+        setMoreReelPlaying(false);
+        return;
+      }
+
+      // Make sure nothing else can play.
+      Object.values(
+        featuredVideoRefs.current
+      ).forEach((item) => {
+        if (!item) return;
+
+        item.pause();
+        item.muted = true;
+      });
+
+      Object.values(
+        moreCardVideoRefs.current
+      ).forEach((item) => {
+        if (!item) return;
+
+        item.pause();
+        item.muted = true;
+      });
 
       try {
         await video.play();
@@ -284,67 +406,13 @@ useEffect(() => {
         activeVideoRef.current = video;
 
         setMoreReelPlaying(true);
-        setMoreReelMuted(true);
-      } catch (playError) {
+      } catch (error) {
         console.error(
-          "Popup reel could not play:",
-          playError
+          "More Reel playback failed:",
+          error
         );
-
-        setMoreReelPlaying(false);
       }
-    }
-  }, 0);
-
-  return () => {
-    window.clearTimeout(timer);
-  };
-}, [expandedReel]);
-  /*
-   * ============================================================
-   * MORE REEL PLAY / PAUSE
-   * ============================================================
-   */
-
-  const toggleMoreReelPlayback = async () => {
-  const video = expandedVideoRef.current;
-
-  if (!video) return;
-
-  if (!video.paused) {
-    video.pause();
-    setMoreReelPlaying(false);
-    return;
-  }
-
-  // Make sure nothing else can play.
-  Object.values(featuredVideoRefs.current).forEach((item) => {
-    if (!item) return;
-
-    item.pause();
-    item.muted = true;
-  });
-
-  Object.values(moreCardVideoRefs.current).forEach((item) => {
-    if (!item) return;
-
-    item.pause();
-    item.muted = true;
-  });
-
-  try {
-    await video.play();
-
-    activeVideoRef.current = video;
-
-    setMoreReelPlaying(true);
-  } catch (error) {
-    console.error(
-      "More Reel playback failed:",
-      error
-    );
-  }
-};
+    };
 
   /*
    * ============================================================
@@ -352,56 +420,61 @@ useEffect(() => {
    * ============================================================
    */
 
-  const toggleMoreReelAudio = async () => {
-  const video = expandedVideoRef.current;
+  const toggleMoreReelAudio =
+    async () => {
+      const video =
+        expandedVideoRef.current;
 
-  if (!video) return;
+      if (!video) return;
 
-  // SOUND OFF
-  if (!video.muted) {
-    video.muted = true;
-    setMoreReelMuted(true);
+      // SOUND OFF
+      if (!video.muted) {
+        video.muted = true;
+        setMoreReelMuted(true);
 
-    // IMPORTANT:
-    // Do NOT pause the video.
-    // Do NOT close the popup.
-    return;
-  }
+        // Do NOT pause.
+        // Do NOT close popup.
+        return;
+      }
 
-  // SOUND ON
-  Object.values(featuredVideoRefs.current).forEach((item) => {
-    if (!item) return;
+      // SOUND ON
+      Object.values(
+        featuredVideoRefs.current
+      ).forEach((item) => {
+        if (!item) return;
 
-    item.pause();
-    item.muted = true;
-  });
+        item.pause();
+        item.muted = true;
+      });
 
-  Object.values(moreCardVideoRefs.current).forEach((item) => {
-    if (!item) return;
+      Object.values(
+        moreCardVideoRefs.current
+      ).forEach((item) => {
+        if (!item) return;
 
-    item.pause();
-    item.muted = true;
-  });
+        item.pause();
+        item.muted = true;
+      });
 
-  video.muted = false;
+      video.muted = false;
 
-  setMoreReelMuted(false);
+      setMoreReelMuted(false);
 
-  try {
-    if (video.paused) {
-      await video.play();
-      setMoreReelPlaying(true);
-    }
-  } catch (error) {
-    console.error(
-      "Could not enable reel audio:",
-      error
-    );
+      try {
+        if (video.paused) {
+          await video.play();
+          setMoreReelPlaying(true);
+        }
+      } catch (error) {
+        console.error(
+          "Could not enable reel audio:",
+          error
+        );
 
-    video.muted = true;
-    setMoreReelMuted(true);
-  }
-};
+        video.muted = true;
+        setMoreReelMuted(true);
+      }
+    };
 
   /*
    * ============================================================
@@ -410,21 +483,22 @@ useEffect(() => {
    */
 
   const closeMoreReel = () => {
-  const video = expandedVideoRef.current;
+    const video =
+      expandedVideoRef.current;
 
-  if (video) {
-    video.pause();
-    video.currentTime = 0;
-    video.muted = true;
-  }
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+      video.muted = true;
+    }
 
-  activeVideoRef.current = null;
-  expandedVideoRef.current = null;
+    activeVideoRef.current = null;
+    expandedVideoRef.current = null;
 
-  setMoreReelPlaying(false);
-  setMoreReelMuted(true);
-  setExpandedReel(null);
-};
+    setMoreReelPlaying(false);
+    setMoreReelMuted(true);
+    setExpandedReel(null);
+  };
 
   /*
    * ============================================================
@@ -584,8 +658,8 @@ useEffect(() => {
       });
 
       Object.values(
-  moreCardVideoRefs.current
-).forEach((video) => {
+        moreCardVideoRefs.current
+      ).forEach((video) => {
         if (!video) return;
 
         video.pause();
@@ -638,7 +712,7 @@ useEffect(() => {
             opacity: 0,
             duration: 1,
           },
-          "-=0.35"  
+          "-=0.35"
         )
         .from(
           ".work-description",
@@ -1046,7 +1120,11 @@ useEffect(() => {
             MORE EDITS
         ==================================================== */}
 
-        <div className="more-work">
+        <div
+  className={`more-work ${
+    showAllMoreWork ? "show-all" : ""
+  }`}
+>
 
           <div className="more-work-label">
             MORE EDITS
@@ -1054,15 +1132,17 @@ useEffect(() => {
 
           <div className="more-reels-grid">
 
-            {moreWork.map((item) => (
+            {visibleMoreWork.map((item) => (
               <article
                 className="more-reel-card"
                 key={item.id}
               >
                 <video
-  ref={(element) => {
-    moreCardVideoRefs.current[item.id] = element;
-  }}
+                  ref={(element) => {
+                    moreCardVideoRefs.current[
+                      item.id
+                    ] = element;
+                  }}
                   className="more-reel-video"
                   src={item.video}
                   muted
@@ -1096,6 +1176,43 @@ useEffect(() => {
             ))}
 
           </div>
+
+          {/* ==================================================
+              VIEW ALL / SHOW LESS
+          ================================================== */}
+
+          {moreWork.length >
+            previewMoreWork.length && (
+            <div className="more-work-expand">
+
+              <button
+                className="more-work-expand-button"
+                type="button"
+                onClick={() =>
+                  setShowAllMoreWork(
+                    (current) => !current
+                  )
+                }
+                aria-expanded={
+                  showAllMoreWork
+                }
+              >
+                <span>
+                  {showAllMoreWork
+                    ? "SHOW LESS"
+                    : "VIEW ALL EDITS"}
+                </span>
+
+                <span className="more-work-expand-arrow">
+                  {showAllMoreWork
+                    ? "↑"
+                    : "↗"}
+                </span>
+              </button>
+
+            </div>
+          )}
+
         </div>
 
       </div>
@@ -1130,9 +1247,10 @@ useEffect(() => {
             {/* Video */}
 
             <video
-  ref={(element) => {
-    expandedVideoRef.current = element;
-  }}
+              ref={(element) => {
+                expandedVideoRef.current =
+                  element;
+              }}
               className="more-reel-viewer-video"
               src={
                 moreWork.find(

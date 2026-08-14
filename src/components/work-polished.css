@@ -1,0 +1,218 @@
+/* =========================================================
+   MORE WORK EXPAND BUTTON
+========================================================= */
+
+.more-work-expand {
+  position: relative;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  margin-top: 42px;
+  padding-top: 4px;
+
+  clear: both;
+
+  isolation: isolate;
+}
+
+.more-work-expand-button {
+  position: relative;
+  z-index: 21;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  min-width: 190px;
+  min-height: 44px;
+
+  padding: 0 20px;
+
+  border: 1px solid var(--border);
+  border-radius: 999px;
+
+  background: #090909;
+
+  color: var(--text);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.15em;
+
+  cursor: pointer;
+
+  isolation: isolate;
+
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.more-work-expand-button:hover {
+  border-color: rgba(255, 99, 20, 0.55);
+
+  background: #111;
+
+  color: var(--accent);
+
+  transform: translateY(-2px);
+}
+
+.more-work-expand-arrow {
+  line-height: 1;
+  font-size: 14px;
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+
+.more-work-expand-button:hover
+.more-work-expand-arrow {
+  color: var(--accent);
+
+  transform: translate(3px, -3px);
+}
+
+.more-work-expand-button[aria-expanded="true"]
+.more-work-expand-arrow {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   MORE EDITS — VIEW ALL BUTTON
+========================================================= */
+
+.more-work-expand {
+  display: flex;
+  justify-content: center;
+  margin-top: 34px;
+}
+
+.more-work-expand-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+
+  min-width: 190px;
+  padding: 13px 18px;
+
+  border: 1px solid var(--border);
+  border-radius: 999px;
+
+  background: transparent;
+  color: var(--text);
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.more-work-expand-arrow {
+  font-size: 14px;
+  line-height: 1;
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+
+.more-work-expand-button:hover {
+  border-color: rgba(255, 99, 20, 0.5);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.more-work-expand-button:hover
+.more-work-expand-arrow {
+  transform: translate(3px, -3px);
+}
+
+.more-work-expand-button[aria-expanded="true"]
+.more-work-expand-arrow {
+  transform: none;
+}
+
+/* =========================================================
+   MORE REELS — STABLE GRID
+========================================================= */
+
+.more-work {
+  position: relative;
+  z-index: 5;
+
+  isolation: isolate;
+}
+
+.more-reels-grid {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  align-items: start;
+
+  gap: 24px;
+
+  width: 100%;
+}
+
+/* Stable card geometry */
+
+.more-reel-card {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+  height: 330px;
+
+  min-height: 330px;
+
+  margin: 0;
+
+  transform: none;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #101012;
+
+  box-sizing: border-box;
+}
+
+/* Only lift the card when previewing */
+.more-reel-card:hover {
+  z-index: 3;
+
+  transform: translateY(-6px);
+}
+
+/* But never let the expanded/show-all grid drift */
+.more-work.show-all .more-reel-card:hover {
+  transform: none;
+}

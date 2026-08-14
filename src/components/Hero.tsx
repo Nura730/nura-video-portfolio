@@ -1,101 +1,89 @@
-import { useLayoutEffect, useRef, useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import "./HeroPolish.css";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const HERO_REEL = "/videos/tripxplo-07.mp4";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement | null>(null);
   const reelRef = useRef<HTMLDivElement | null>(null);
   const reelInnerRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // ─────────────────────────────
-  // HERO GSAP ANIMATIONS
-  // ─────────────────────────────
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+
   useLayoutEffect(() => {
     const hero = heroRef.current;
-
     if (!hero) return;
 
     const ctx = gsap.context(() => {
       const intro = gsap.timeline({
-        defaults: {
-          ease: "power4.out",
-        },
+        defaults: { ease: "power4.out" },
       });
 
       intro
-        // Small orange label
         .from(".hero-label", {
-          y: 30,
+          y: 24,
           opacity: 0,
-          duration: 0.7,
+          duration: 0.65,
         })
-
-        // Main typography
         .from(
           ".hero-title-line",
           {
-            yPercent: 120,
+            yPercent: 115,
             opacity: 0,
-            duration: 1.1,
-            stagger: 0.12,
+            duration: 1.05,
+            stagger: 0.1,
           },
-          "-=0.3"
+          "-=0.2"
         )
-
-        // Description
         .from(
           ".hero-description",
           {
-            y: 25,
-            opacity: 0,
-            duration: 0.8,
-          },
-          "-=0.45"
-        )
-
-        // Buttons
-        .from(
-          ".hero-actions",
-          {
-            y: 20,
+            y: 22,
             opacity: 0,
             duration: 0.7,
           },
           "-=0.45"
         )
-
-        // Availability
         .from(
-          ".hero-availability",
+          ".hero-actions",
           {
-            y: 15,
+            y: 18,
             opacity: 0,
             duration: 0.6,
           },
-          "-=0.35"
+          "-=0.4"
         )
-
-        // Reel card
+        .from(
+          ".hero-availability",
+          {
+            y: 12,
+            opacity: 0,
+            duration: 0.5,
+          },
+          "-=0.3"
+        )
         .from(
           ".hero-reel",
           {
-            x: 100,
-            y: 20,
+            x: 90,
             opacity: 0,
-            scale: 0.92,
+            scale: 0.94,
             rotate: 2,
-            duration: 1.1,
+            duration: 1,
             ease: "power3.out",
           },
-          "-=0.9"
+          "-=0.8"
         );
 
-      // Hero scroll animation
       gsap.to(".hero-content", {
-        yPercent: -10,
-        opacity: 0.75,
+        yPercent: -8,
+        opacity: 0.72,
         ease: "none",
         scrollTrigger: {
           trigger: hero,
@@ -105,58 +93,57 @@ export default function Hero() {
         },
       });
 
-      // Reel floating animation
+      gsap.to(".hero-orbit", {
+        rotate: 360,
+        duration: 24,
+        repeat: -1,
+        ease: "none",
+      });
+
       gsap.to(".hero-reel", {
-        y: -8,
-        duration: 3,
+        y: -7,
+        duration: 3.2,
         repeat: -1,
         yoyo: true,
         ease: "sine.inOut",
-        delay: 1.5,
+        delay: 1.2,
       });
 
-      // Reel scroll movement
-      gsap.to(".hero-reel", {
-        y: -40,
-        ease: "none",
-        scrollTrigger: {
-          trigger: hero,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      // Primary button hover
-      const primaryButton = hero.querySelector(
+      const primaryButton = hero.querySelector<HTMLElement>(
         ".hero-primary-button"
       );
 
-      if (primaryButton) {
-        primaryButton.addEventListener("mouseenter", () => {
-          gsap.to(primaryButton, {
+      const secondaryButton = hero.querySelector<HTMLElement>(
+        ".hero-secondary-button"
+      );
+
+      [primaryButton, secondaryButton].forEach((button) => {
+        if (!button) return;
+
+        const enter = () => {
+          gsap.to(button, {
             y: -4,
             duration: 0.25,
             ease: "power2.out",
           });
-        });
+        };
 
-        primaryButton.addEventListener("mouseleave", () => {
-          gsap.to(primaryButton, {
+        const leave = () => {
+          gsap.to(button, {
             y: 0,
             duration: 0.25,
             ease: "power2.out",
           });
-        });
-      }
+        };
+
+        button.addEventListener("mouseenter", enter);
+        button.addEventListener("mouseleave", leave);
+      });
     }, hero);
 
     return () => ctx.revert();
   }, []);
 
-  // ─────────────────────────────
-  // REEL 3D MOUSE INTERACTION
-  // ─────────────────────────────
   useEffect(() => {
     const reel = reelRef.current;
     const inner = reelInnerRef.current;
@@ -165,28 +152,25 @@ export default function Hero() {
 
     const handleMouseMove = (event: MouseEvent) => {
       const rect = reel.getBoundingClientRect();
-
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      const rotateY = ((x - centerX) / centerX) * 5;
-      const rotateX = ((centerY - y) / centerY) * 5;
-
       gsap.to(reel, {
-        rotateX,
-        rotateY,
-        duration: 0.5,
+        rotateX: ((centerY - y) / centerY) * 4.5,
+        rotateY: ((x - centerX) / centerX) * 4.5,
+        duration: 0.45,
         ease: "power3.out",
+        overwrite: true,
       });
 
       gsap.to(inner, {
-        x: ((x - centerX) / centerX) * 8,
-        y: ((y - centerY) / centerY) * 8,
-        duration: 0.5,
+        x: ((x - centerX) / centerX) * 7,
+        y: ((y - centerY) / centerY) * 7,
+        duration: 0.45,
         ease: "power3.out",
+        overwrite: true,
       });
     };
 
@@ -194,14 +178,14 @@ export default function Hero() {
       gsap.to(reel, {
         rotateX: 0,
         rotateY: 0,
-        duration: 0.8,
+        duration: 0.75,
         ease: "power3.out",
       });
 
       gsap.to(inner, {
         x: 0,
         y: 0,
-        duration: 0.8,
+        duration: 0.75,
         ease: "power3.out",
       });
     };
@@ -215,39 +199,83 @@ export default function Hero() {
     };
   }, []);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+
+    const playPromise = video.play();
+    playPromise?.catch(() => setIsPlaying(false));
+
+    return () => {
+      video.pause();
+    };
+  }, []);
+
+  const togglePlayback = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.muted = false;
+      setIsMuted(false);
+
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        video.muted = true;
+        setIsMuted(true);
+        await video.play().catch(() => undefined);
+        setIsPlaying(!video.paused);
+      }
+
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
   return (
-    <section className="hero" ref={heroRef}>
+    <section className="hero hero-polished" ref={heroRef}>
+      <div className="hero-orbit" aria-hidden="true">
+        <span />
+      </div>
+
+      <div className="hero-glow hero-glow-one" aria-hidden="true" />
+      <div className="hero-glow hero-glow-two" aria-hidden="true" />
+
       <div className="hero-content">
-
-        {/* LEFT CONTENT */}
         <div className="hero-left">
+          <div className="hero-label">FREELANCE VIDEO EDITOR</div>
 
-          <div className="hero-label">
-            VIDEO EDITOR
-          </div>
-
-          <div className="hero-title">
-            <div className="hero-title-line">
-              &amp; CREATIVE
-            </div>
-
-            <div className="hero-title-line">
-              STORYTELLER
-            </div>
+          <div
+            className="hero-title"
+            aria-label="Video editor and creative storyteller"
+          >
+            <div className="hero-title-line">VIDEO EDITOR</div>
+            <div className="hero-title-line">&amp; CREATIVE</div>
+            <div className="hero-title-line">STORYTELLER.</div>
           </div>
 
           <p className="hero-description">
-            I turn raw footage into engaging reels, travel stories
-            and social content built to hold attention.
+            I turn raw footage into sharp, story-driven edits for social,
+            creators and brands — built around pacing, sound and attention.
           </p>
 
           <div className="hero-actions">
-
-            <a
-              href="#work"
-              className="hero-primary-button"
-            >
-              VIEW MY WORK ↗
+            <a href="#work" className="hero-primary-button">
+              VIEW MY WORK <span>↗</span>
             </a>
 
             <a
@@ -257,63 +285,78 @@ export default function Hero() {
             >
               LET&apos;S TALK
             </a>
-
           </div>
 
           <div className="hero-availability">
-            AVAILABLE FOR FREELANCE PROJECTS
+            <span className="availability-dot" />
+            OPEN FOR NEW EDITING PROJECTS
           </div>
-
         </div>
 
-        {/* REEL CARD */}
-        <div
-          className="hero-reel"
-          ref={reelRef}
-        >
-
+        <div className="hero-reel" ref={reelRef}>
           <div className="reel-frame">
-
-            <div
-              className="reel-inner"
-              ref={reelInnerRef}
-            >
-
-              <div className="reel-placeholder">
-                PLAY REEL
-              </div>
-
-              <button
-                className="reel-arrow"
-                type="button"
-              >
-                ↗
-              </button>
-
+            <div className="reel-topline">
+              <span>SELECTED WORK</span>
+              <span>01 / 01</span>
             </div>
 
+            <div className="reel-inner" ref={reelInnerRef}>
+              <video
+                ref={videoRef}
+                className="hero-reel-video"
+                src={HERO_REEL}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Selected video editing work"
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+              />
+
+              <div className="reel-shade" aria-hidden="true" />
+
+              <div className="reel-center-meta">
+                <span>EDIT / SHORT-FORM</span>
+                <strong>{isPlaying ? "PLAYING" : "PAUSED"}</strong>
+              </div>
+
+              <div className="reel-controls">
+                <button
+                  className="reel-play"
+                  type="button"
+                  onClick={togglePlayback}
+                  aria-label={
+                    isPlaying ? "Pause selected reel" : "Play selected reel"
+                  }
+                >
+                  {isPlaying ? "PAUSE" : "PLAY REEL"}
+                  <span>{isPlaying ? "Ⅱ" : "▶"}</span>
+                </button>
+
+                <button
+                  className="reel-sound"
+                  type="button"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
+                >
+                  {isMuted ? "SOUND OFF" : "SOUND ON"}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="reel-info">
-
-            <span>
-              SELECTED WORK
-            </span>
-
-            <strong>
-              10+ reels · travel · social
-            </strong>
-
+            <span>SELECTED WORK</span>
+            <strong>SHORT-FORM • SOCIAL • STORY</strong>
           </div>
-
         </div>
-
       </div>
 
       <div className="hero-scroll">
-        SCROLL ↓
+        <span>SCROLL</span>
+        <i />
       </div>
-
     </section>
   );
 }

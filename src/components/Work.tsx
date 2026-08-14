@@ -52,14 +52,6 @@ export default function Work() {
   const [showAllMoreWork, setShowAllMoreWork] =
     useState(false);
 
-  /*
-   * ============================================================
-   * CURATED MORE EDITS PREVIEW
-   * ============================================================
-   *
-   * Only these reels appear initially.
-   * "VIEW ALL EDITS" reveals the complete collection.
-   */
 
   const previewMoreWorkIds = [
     "tripxplo-03",

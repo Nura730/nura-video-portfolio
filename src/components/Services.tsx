@@ -7,27 +7,31 @@ gsap.registerPlugin(ScrollTrigger);
 const services = [
   {
     number: "01",
-    title: "SHORT-FORM REELS",
+    title: "SHORT-FORM VIDEO",
+    meta: "REELS • SHORTS • VERTICAL",
     description:
-      "Instagram-ready edits built around pacing, hooks, captions and music.",
+      "Fast, engaging edits built around hooks, pacing, captions, music and retention.",
   },
   {
     number: "02",
-    title: "TRAVEL CONTENT",
+    title: "LONG-FORM VIDEO",
+    meta: "YOUTUBE • INTERVIEWS • EXPLAINERS",
     description:
-      "Cinematic cuts that turn locations and moments into a story.",
+      "Structured edits that keep longer videos clear, engaging and easy to follow.",
   },
   {
     number: "03",
-    title: "SOCIAL CONTENT",
+    title: "SOCIAL & CREATOR CONTENT",
+    meta: "CREATORS • BRANDS • SOCIAL",
     description:
-      "Clean, engaging edits designed for creators and brands.",
+      "Platform-ready content shaped around the audience, format and personality of the creator.",
   },
   {
     number: "04",
-    title: "TEXT & MOTION",
+    title: "MOTION & VISUAL EDITING",
+    meta: "TYPOGRAPHY • CAPTIONS • MOTION",
     description:
-      "Typography-led edits, animated text and simple motion graphics.",
+      "Typography, animated captions, transitions and motion graphics that give the edit personality.",
   },
 ];
 
@@ -35,220 +39,233 @@ export default function Services() {
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
-  const section = sectionRef.current;
+    const section = sectionRef.current;
 
-  if (!section) return;
+    if (!section) return;
 
-  const cleanupHandlers: Array<() => void> = [];
+    const ctx = gsap.context(() => {
+      // --------------------------------
+      // SECTION INTRO
+      // --------------------------------
 
-  const ctx = gsap.context(() => {
-    // ─────────────────────────────
-    // SECTION INTRO
-    // ─────────────────────────────
-
-    const intro = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top 78%",
-        toggleActions: "play none none reverse",
-      },
-      defaults: {
-        ease: "power4.out",
-      },
-    });
-
-    intro
-      .from(".services-label", {
-        y: 25,
-        opacity: 0,
-        duration: 0.7,
-      })
-      .from(
-        ".services-title",
-        {
-          y: 70,
-          opacity: 0,
-          duration: 1,
-        },
-        "-=0.35"
-      );
-
-    // ─────────────────────────────
-    // SERVICE ROWS
-    // ─────────────────────────────
-
-    const rows = section.querySelectorAll<HTMLElement>(
-      ".service-row"
-    );
-
-    rows.forEach((row) => {
-      const number = row.querySelector<HTMLElement>(
-        ".service-number"
-      );
-
-      const name = row.querySelector<HTMLElement>(
-        ".service-name"
-      );
-
-      const description = row.querySelector<HTMLElement>(
-        ".service-description"
-      );
-
-      const arrow = row.querySelector<HTMLElement>(
-        ".service-arrow"
-      );
-
-      // Scroll reveal
-      const rowTimeline = gsap.timeline({
+      const intro = gsap.timeline({
         scrollTrigger: {
-          trigger: row,
-          start: "top 88%",
+          trigger: section,
+          start: "top 78%",
+          toggleActions: "play none none reverse",
+        },
+        defaults: {
+          ease: "power4.out",
+        },
+      });
+
+      intro
+        .from(".services-label", {
+          y: 20,
+          opacity: 0,
+          duration: 0.65,
+        })
+        .from(
+          ".services-title",
+          {
+            y: 65,
+            opacity: 0,
+            duration: 0.95,
+          },
+          "-=0.3"
+        )
+        .from(
+          ".services-description",
+          {
+            y: 25,
+            opacity: 0,
+            duration: 0.65,
+          },
+          "-=0.5"
+        );
+
+      // --------------------------------
+      // SERVICE ROW REVEAL
+      // --------------------------------
+
+      const rows =
+        section.querySelectorAll<HTMLElement>(".service-row");
+
+      gsap.from(rows, {
+        y: 55,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".services-list",
+          start: "top 82%",
           toggleActions: "play none none reverse",
         },
       });
 
-      rowTimeline
-        .from(row, {
-          y: 45,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power3.out",
-        })
-        .from(
-          number,
-          {
-            x: -25,
-            opacity: 0,
+      // --------------------------------
+      // HOVER INTERACTION
+      // --------------------------------
+
+      rows.forEach((row) => {
+        const number =
+          row.querySelector<HTMLElement>(".service-number");
+
+        const title =
+          row.querySelector<HTMLElement>(".service-name");
+
+        const description =
+          row.querySelector<HTMLElement>(".service-description");
+
+        const arrow =
+          row.querySelector<HTMLElement>(".service-arrow");
+
+        const meta =
+          row.querySelector<HTMLElement>(".service-meta");
+
+        const ghost =
+          row.querySelector<HTMLElement>(".service-ghost-number");
+
+        const handleEnter = () => {
+          gsap.to(row, {
+            x: 10,
+            duration: 0.45,
+            ease: "power3.out",
+          });
+
+          if (number) {
+            gsap.to(number, {
+              x: 5,
+              color: "#ff6314",
+              duration: 0.35,
+              ease: "power2.out",
+            });
+          }
+
+          if (title) {
+            gsap.to(title, {
+              x: 5,
+              duration: 0.4,
+              ease: "power3.out",
+            });
+          }
+
+          if (description) {
+            gsap.to(description, {
+              x: 5,
+              opacity: 1,
+              duration: 0.4,
+              ease: "power3.out",
+            });
+          }
+
+          if (meta) {
+            gsap.to(meta, {
+              x: 5,
+              color: "#ff6314",
+              duration: 0.35,
+              ease: "power2.out",
+            });
+          }
+
+          if (arrow) {
+            gsap.to(arrow, {
+              x: 8,
+              y: -4,
+              rotate: 45,
+              scale: 1.12,
+              color: "#ff6314",
+              duration: 0.45,
+              ease: "power3.out",
+            });
+          }
+
+          if (ghost) {
+            gsap.to(ghost, {
+              opacity: 0.055,
+              x: 20,
+              duration: 0.6,
+              ease: "power3.out",
+            });
+          }
+        };
+
+        const handleLeave = () => {
+          gsap.to(row, {
+            x: 0,
             duration: 0.55,
             ease: "power3.out",
-          },
-          "-=0.55"
-        )
-        .from(
-          name,
-          {
-            x: -35,
-            opacity: 0,
-            duration: 0.65,
-            ease: "power3.out",
-          },
-          "-=0.45"
-        )
-        .from(
-          description,
-          {
-            x: 20,
-            opacity: 0,
-            duration: 0.6,
-            ease: "power3.out",
-          },
-          "-=0.45"
-        )
-        .from(
-          arrow,
-          {
-            scale: 0,
-            rotate: -45,
-            opacity: 0,
-            duration: 0.55,
-            ease: "back.out(1.7)",
-          },
-          "-=0.45"
-        );
+          });
 
-      // ─────────────────────────────
-      // HOVER
-      // ─────────────────────────────
+          if (number) {
+            gsap.to(number, {
+              x: 0,
+              clearProps: "color",
+              duration: 0.4,
+              ease: "power2.out",
+            });
+          }
 
-      const handleEnter = () => {
-        gsap.to(row, {
-          x: 8,
-          duration: 0.45,
-          ease: "power3.out",
-        });
+          if (title) {
+            gsap.to(title, {
+              x: 0,
+              duration: 0.4,
+              ease: "power3.out",
+            });
+          }
 
-        gsap.to(number, {
-          x: 5,
-          color: "#ff6314",
-          duration: 0.35,
-          ease: "power2.out",
-        });
+          if (description) {
+            gsap.to(description, {
+              x: 0,
+              duration: 0.4,
+              ease: "power3.out",
+            });
+          }
 
-        gsap.to(name, {
-          x: 5,
-          duration: 0.35,
-          ease: "power2.out",
-        });
+          if (meta) {
+            gsap.to(meta, {
+              x: 0,
+              clearProps: "color",
+              duration: 0.4,
+              ease: "power2.out",
+            });
+          }
 
-        gsap.to(description, {
-          x: 5,
-          duration: 0.35,
-          ease: "power2.out",
-        });
+          if (arrow) {
+            gsap.to(arrow, {
+              x: 0,
+              y: 0,
+              rotate: 0,
+              scale: 1,
+              clearProps: "color",
+              duration: 0.55,
+              ease: "power3.out",
+            });
+          }
 
-        gsap.to(arrow, {
-          x: 8,
-          y: -4,
-          rotate: 45,
-          scale: 1.12,
-          color: "#ff6314",
-          duration: 0.45,
-          ease: "power3.out",
-        });
-      };
+          if (ghost) {
+            gsap.to(ghost, {
+              opacity: 0,
+              x: 0,
+              duration: 0.45,
+              ease: "power3.out",
+            });
+          }
+        };
 
-      const handleLeave = () => {
-        gsap.to(row, {
-          x: 0,
-          duration: 0.55,
-          ease: "power3.out",
-        });
+        row.addEventListener("mouseenter", handleEnter);
+        row.addEventListener("mouseleave", handleLeave);
 
-        gsap.to(number, {
-          x: 0,
-          clearProps: "color",
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-        gsap.to(name, {
-          x: 0,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-        gsap.to(description, {
-          x: 0,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-        gsap.to(arrow, {
-          x: 0,
-          y: 0,
-          rotate: 0,
-          scale: 1,
-          clearProps: "color",
-          duration: 0.55,
-          ease: "power3.out",
-        });
-      };
-
-      row.addEventListener("mouseenter", handleEnter);
-      row.addEventListener("mouseleave", handleLeave);
-
-      cleanupHandlers.push(() => {
-        row.removeEventListener("mouseenter", handleEnter);
-        row.removeEventListener("mouseleave", handleLeave);
+        return () => {
+          row.removeEventListener("mouseenter", handleEnter);
+          row.removeEventListener("mouseleave", handleLeave);
+        };
       });
-    });
-  }, section);
+    }, section);
 
-  return () => {
-    cleanupHandlers.forEach((cleanup) => cleanup());
-    ctx.revert();
-  };
-}, []);
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
@@ -257,48 +274,65 @@ export default function Services() {
       ref={sectionRef}
     >
       <div className="services-container">
+        {/* INTRO */}
 
         <div className="services-intro">
-
           <div className="services-label">
-            02 / SERVICES
+            02 / WHAT I DO
           </div>
 
           <h2 className="services-title">
-            What I can edit
+            Video editing
             <br />
-            for you.
+            built around the story.
           </h2>
 
+          <p className="services-description">
+            From short-form content to longer videos, I turn raw
+            footage into clean, engaging edits with the right
+            pacing, visuals, sound and motion.
+          </p>
         </div>
 
-        <div className="services-list">
+        {/* SERVICES */}
 
+        <div className="services-list">
           {services.map((service) => (
-            <div
+            <article
               className="service-row"
               key={service.number}
             >
+              <span className="service-ghost-number">
+                {service.number}
+              </span>
+
               <div className="service-number">
                 {service.number}
               </div>
 
-              <div className="service-name">
-                {service.title}
+              <div className="service-main">
+                <div className="service-meta">
+                  {service.meta}
+                </div>
+
+                <h3 className="service-name">
+                  {service.title}
+                </h3>
+
+                <p className="service-description">
+                  {service.description}
+                </p>
               </div>
 
-              <div className="service-description">
-                {service.description}
-              </div>
-
-              <div className="service-arrow">
+              <div
+                className="service-arrow"
+                aria-hidden="true"
+              >
                 ↗
               </div>
-            </div>
+            </article>
           ))}
-
         </div>
-
       </div>
     </section>
   );

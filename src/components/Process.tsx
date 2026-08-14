@@ -148,7 +148,7 @@ export default function Process() {
          PROCESS STEPS
       -------------------------------- */
 
-      steps.forEach((step, index) => {
+      steps.forEach((step) => {
         const number =
           step.querySelector<HTMLElement>(".process-number");
 

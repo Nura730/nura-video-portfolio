@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import cors from "cors";
 
 dotenv.config();
 
@@ -13,6 +14,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json({ limit: "50kb" }));
+app.use(
+  cors({
+    origin: "https://nura-video-portfolio.vercel.app",
+  })
+);
 
 /*
  * =========================================================

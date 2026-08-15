@@ -528,8 +528,7 @@ Sent from Nura Video Portfolio
         `Sending confirmation email to ${cleanEmail}`
       );
 
-      const confirmationInfo =
-        await gmailTransporter.sendMail({
+      gmailTransporter.sendMail({
           from: `Nura — Video Editor <${GMAIL_USER}>`,
           to: cleanEmail,
           replyTo: GMAIL_USER,
@@ -1189,6 +1188,7 @@ html: `
         confirmationError
       );
     }
+    
 
     return res.status(200).json({
       success: true,

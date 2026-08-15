@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import crypto from "node:crypto";
 import cors from "cors";
 import { google } from "googleapis";
-import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -291,35 +290,101 @@ app.get("/oauth2callback", async (req, res) => {
     `);
   }
 });
-
 /* =========================================================
-   GMAIL TRANSPORTER
+   GMAIL API EMAIL SENDER
+   Uses HTTPS Gmail API instead of SMTP.
 ========================================================= */
 
-function createGmailTransporter() {
+function createRawEmail({
+  from,
+  to,
+  replyTo,
+  subject,
+  text,
+  html,
+}) {
+  const headers = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Reply-To: ${replyTo || from}`,
+    `Subject: ${subject}`,
+    "MIME-Version: 1.0",
+    'Content-Type: multipart/alternative; boundary="NURA_BOUNDARY"',
+  ];
+
+  const message = [
+    ...headers,
+    "",
+    "--NURA_BOUNDARY",
+    "Content-Type: text/plain; charset=UTF-8",
+    "Content-Transfer-Encoding: 8bit",
+    "",
+    text,
+    "",
+    "--NURA_BOUNDARY",
+    "Content-Type: text/html; charset=UTF-8",
+    "Content-Transfer-Encoding: 8bit",
+    "",
+    html,
+    "",
+    "--NURA_BOUNDARY--",
+  ].join("\r\n");
+
+  return Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+
+async function sendGmail({
+  to,
+  subject,
+  text,
+  html,
+  replyTo,
+}) {
   if (
     !oauth2Client ||
-    !GMAIL_USER ||
-    !GMAIL_REFRESH_TOKEN
+    !GOOGLE_CLIENT_ID ||
+    !GOOGLE_CLIENT_SECRET ||
+    !GMAIL_REFRESH_TOKEN ||
+    !GMAIL_USER
   ) {
-    return null;
+    throw new Error(
+      "Gmail OAuth environment variables are not configured."
+    );
   }
 
-  return nodemailer.createTransport({
-    service: "gmail",
-
-    auth: {
-      type: "OAuth2",
-
-      user: GMAIL_USER,
-
-      clientId: GOOGLE_CLIENT_ID,
-
-      clientSecret: GOOGLE_CLIENT_SECRET,
-
-      refreshToken: GMAIL_REFRESH_TOKEN,
-    },
+  oauth2Client.setCredentials({
+    refresh_token: GMAIL_REFRESH_TOKEN,
   });
+
+  const gmail = google.gmail({
+    version: "v1",
+    auth: oauth2Client,
+  });
+
+  const raw = createRawEmail({
+    from: `Nura Portfolio <${GMAIL_USER}>`,
+    to,
+    replyTo: replyTo || GMAIL_USER,
+    subject,
+    text,
+    html,
+  });
+
+  const response =
+    await gmail.users.messages.send({
+      userId: "me",
+
+      requestBody: {
+        raw,
+      },
+    });
+
+  return response.data;
 }
 
 /* =========================================================
@@ -1180,13 +1245,201 @@ app.post("/api/contact", async (req, res) => {
        GMAIL CHECK
     --------------------------------------------- */
 
-    const gmailTransporter =
-      createGmailTransporter();
+const ownerEmailInfo = await sendGmail({
+  to: CONTACT_RECEIVER,
 
-    if (!gmailTransporter) {
-      console.error(
-        "Gmail is not configured."
-      );
+  replyTo: cleanEmail,
+
+  subject:
+    `New Video Editing Project — ${cleanName}`,
+
+  text: `
+A new project enquiry was submitted through your portfolio.
+
+Name:
+${cleanName}
+
+Email:
+${cleanEmail}
+
+Video Type:
+${cleanVideoType}
+
+Deadline:
+${cleanDeadline || "Not specified"}
+
+Budget:
+${cleanBudget || "Not specified"}
+
+Social / Channel:
+${cleanSocial || "Not specified"}
+
+Project + References:
+${cleanProject}
+
+--------------------------------
+
+Reply directly to this email to contact the client.
+
+Nura Video Portfolio
+  `.trim(),
+
+  html: `
+<!DOCTYPE html>
+<html>
+<body style="
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+padding:30px;
+color:#222;
+">
+
+<div style="
+max-width:650px;
+margin:auto;
+background:#fff;
+padding:35px;
+border:1px solid #ddd;
+">
+
+<h2>New Video Editing Project</h2>
+
+<p>
+A new project enquiry was submitted through your portfolio.
+</p>
+
+<hr>
+
+<p>
+<strong>Name</strong><br>
+${escapeHtml(cleanName)}
+</p>
+
+<p>
+<strong>Email</strong><br>
+<a href="mailto:${escapeHtml(cleanEmail)}">
+${escapeHtml(cleanEmail)}
+</a>
+</p>
+
+<p>
+<strong>Video Type</strong><br>
+${escapeHtml(cleanVideoType)}
+</p>
+
+<p>
+<strong>Deadline</strong><br>
+${escapeHtml(
+  cleanDeadline || "Not specified"
+)}
+</p>
+
+<p>
+<strong>Budget</strong><br>
+${escapeHtml(
+  cleanBudget || "Not specified"
+)}
+</p>
+
+<p>
+<strong>Social / Channel</strong><br>
+${escapeHtml(
+  cleanSocial || "Not specified"
+)}
+</p>
+
+<p>
+<strong>Project + References</strong><br>
+${escapeHtml(cleanProject).replaceAll(
+  "\n",
+  "<br>"
+)}
+</p>
+
+<hr>
+
+<p>
+Reply directly to this email to contact the client.
+</p>
+
+</div>
+
+</body>
+</html>
+  `.trim(),
+});
+
+console.log(
+  `Enquiry email sent successfully. Gmail ID: ${
+    ownerEmailInfo.id || "unknown"
+  }`
+);
+
+const confirmationInfo = await sendGmail({
+  to: cleanEmail,
+
+  replyTo: GMAIL_USER,
+
+  subject:
+    "Received — Let's bring your vision to life",
+
+  text: `
+Hi ${cleanName},
+
+Thank you for reaching out to Nura.
+
+I've received your project enquiry and will review the details carefully.
+
+PROJECT DETAILS
+
+Project type:
+${cleanVideoType}
+
+Deadline:
+${cleanDeadline || "Not specified"}
+
+Budget:
+${cleanBudget || "Not specified"}
+
+WHAT HAPPENS NEXT
+
+01 — REVIEW
+I'll review your requirements, references, timeline and budget.
+
+02 — DISCUSS
+If the project is a good fit, we'll connect to clarify the creative direction and expectations.
+
+03 — CREATE
+Once everything is aligned, we'll move forward with the editing process.
+
+No action is needed from you right now.
+
+I'll be in touch soon.
+
+Looking forward to working with you.
+
+—
+NURA
+Video Editor
+
+Portfolio:
+https://nura-video-portfolio.vercel.app/
+  `.trim(),
+
+  html: createClientConfirmationEmail({
+    name: cleanName,
+    videoType: cleanVideoType,
+    deadline: cleanDeadline,
+    budget: cleanBudget,
+    project: cleanProject,
+  }),
+});
+
+console.log(
+  `Confirmation email sent successfully to ${cleanEmail}. Gmail ID: ${
+    confirmationInfo.id || "unknown"
+  }`
+);
 
       return res.status(500).json({
         success: false,

@@ -16,7 +16,10 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: "50kb" }));
 app.use(
   cors({
-    origin: "https://nura-video-portfolio.vercel.app",
+    origin: [
+      "https://nura-video-portfolio.vercel.app",
+      "http://localhost:5173",
+    ],
   })
 );
 

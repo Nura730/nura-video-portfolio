@@ -533,26 +533,618 @@ Sent from Nura Video Portfolio
           from: `Nura — Video Editor <${GMAIL_USER}>`,
           to: cleanEmail,
           replyTo: GMAIL_USER,
-          subject: "Project enquiry received — Nura",
-          text: `
+          subject: "Received — Let's bring your vision to life",
+
+text: `
 Hi ${cleanName},
 
-Thanks for reaching out through my portfolio.
+Thank you for reaching out to Nura.
 
-I've received your project enquiry and will get back to you as soon as possible.
+I've received your project enquiry and will review the details carefully. I'll get back to you shortly with the next steps, availability, and any questions I may have about your project.
 
-Project type: ${cleanVideoType}
+PROJECT DETAILS
 
-Deadline: ${cleanDeadline || "Not specified"}
-Budget: ${cleanBudget || "Not specified"}
+Project type:
+${cleanVideoType}
 
-Your project message:
-${cleanProject}
+Deadline:
+${cleanDeadline || "Not specified"}
 
-Best,
-Nura
+Budget:
+${cleanBudget || "Not specified"}
+
+WHAT HAPPENS NEXT
+
+01 — REVIEW
+I'll go through your requirements, references, timeline, and budget.
+
+02 — DISCUSS
+If the project is a good fit, we'll connect to clarify the creative direction and expectations.
+
+03 — CREATE
+Once everything is aligned, we'll move forward with the editing process and bring the concept to life.
+
+No action is needed from you right now. I'll be in touch soon.
+
+Looking forward to working with you.
+
+—
+NURA
 Video Editor
-          `.trim(),
+Creative editing for brands, creators & businesses
+
+Portfolio:
+https://nura-video-portfolio.vercel.app/
+`.trim(),
+
+html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>Project enquiry received — NURA</title>
+</head>
+
+<body style="margin:0; padding:0; background:#080808; font-family:Arial, Helvetica, sans-serif; color:#f5f5f5;">
+
+  <table
+    role="presentation"
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    style="background:#080808; margin:0; padding:0;"
+  >
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <table
+          role="presentation"
+          width="100%"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          style="max-width:640px; background:#101010; border:1px solid #292929;"
+        >
+
+          <!-- TOP BRAND BAR -->
+          <tr>
+            <td style="padding:28px 32px; border-bottom:1px solid #292929;">
+
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+              >
+                <tr>
+
+                  <td
+                    style="
+                      font-size:20px;
+                      font-weight:800;
+                      letter-spacing:1px;
+                      color:#ffffff;
+                    "
+                  >
+                    NURA
+                  </td>
+
+                  <td
+                    align="right"
+                    style="
+                      font-size:10px;
+                      font-weight:bold;
+                      letter-spacing:2px;
+                      color:#777777;
+                    "
+                  >
+                    VIDEO EDITOR
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+
+          <!-- HERO -->
+          <tr>
+            <td style="padding:48px 32px 36px 32px;">
+
+              <div
+                style="
+                  font-size:10px;
+                  font-weight:bold;
+                  letter-spacing:2px;
+                  color:#ff641c;
+                  margin-bottom:18px;
+                "
+              >
+                PROJECT ENQUIRY · RECEIVED
+              </div>
+
+              <h1
+                style="
+                  margin:0;
+                  font-size:34px;
+                  line-height:1.15;
+                  font-weight:700;
+                  letter-spacing:-1px;
+                  color:#ffffff;
+                "
+              >
+                Let's bring your
+                <br />
+                vision to life.
+              </h1>
+
+              <div
+                style="
+                  width:42px;
+                  height:3px;
+                  background:#ff641c;
+                  margin:28px 0;
+                "
+              ></div>
+
+              <p
+                style="
+                  margin:0;
+                  font-size:15px;
+                  line-height:1.8;
+                  color:#b8b8b8;
+                "
+              >
+                Hi ${escapeHtml(cleanName)},
+                <br /><br />
+                Thank you for reaching out to Nura.
+                I've received your project enquiry and will review the
+                details carefully. I'll get back to you shortly with
+                the next steps and availability.
+              </p>
+
+            </td>
+          </tr>
+
+
+          <!-- PROJECT DETAILS -->
+          <tr>
+            <td style="padding:0 32px 36px 32px;">
+
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  background:#151515;
+                  border:1px solid #292929;
+                "
+              >
+
+                <tr>
+                  <td
+                    colspan="2"
+                    style="
+                      padding:20px 22px;
+                      border-bottom:1px solid #292929;
+                      font-size:10px;
+                      font-weight:bold;
+                      letter-spacing:2px;
+                      color:#ff641c;
+                    "
+                  >
+                    PROJECT DETAILS
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    width="50%"
+                    style="
+                      padding:18px 22px;
+                      border-bottom:1px solid #292929;
+                      color:#777777;
+                      font-size:11px;
+                      text-transform:uppercase;
+                      letter-spacing:1px;
+                    "
+                  >
+                    Project type
+                  </td>
+
+                  <td
+                    width="50%"
+                    style="
+                      padding:18px 22px;
+                      border-bottom:1px solid #292929;
+                      color:#ffffff;
+                      font-size:13px;
+                      font-weight:bold;
+                    "
+                  >
+                    ${escapeHtml(cleanVideoType)}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    style="
+                      padding:18px 22px;
+                      border-bottom:1px solid #292929;
+                      color:#777777;
+                      font-size:11px;
+                      text-transform:uppercase;
+                      letter-spacing:1px;
+                    "
+                  >
+                    Deadline
+                  </td>
+
+                  <td
+                    style="
+                      padding:18px 22px;
+                      border-bottom:1px solid #292929;
+                      color:#ffffff;
+                      font-size:13px;
+                    "
+                  >
+                    ${escapeHtml(cleanDeadline || "Not specified")}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    style="
+                      padding:18px 22px;
+                      color:#777777;
+                      font-size:11px;
+                      text-transform:uppercase;
+                      letter-spacing:1px;
+                    "
+                  >
+                    Budget
+                  </td>
+
+                  <td
+                    style="
+                      padding:18px 22px;
+                      color:#ffffff;
+                      font-size:13px;
+                    "
+                  >
+                    ${escapeHtml(cleanBudget || "Not specified")}
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+
+          <!-- NEXT STEPS -->
+          <tr>
+            <td style="padding:0 32px 42px 32px;">
+
+              <div
+                style="
+                  font-size:10px;
+                  font-weight:bold;
+                  letter-spacing:2px;
+                  color:#ff641c;
+                  margin-bottom:20px;
+                "
+              >
+                WHAT HAPPENS NEXT
+              </div>
+
+
+              <!-- STEP 01 -->
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="margin-bottom:14px;"
+              >
+                <tr>
+
+                  <td
+                    valign="top"
+                    width="58"
+                    style="
+                      font-size:13px;
+                      font-weight:bold;
+                      color:#ff641c;
+                    "
+                  >
+                    01
+                  </td>
+
+                  <td valign="top">
+
+                    <div
+                      style="
+                        font-size:14px;
+                        font-weight:bold;
+                        color:#ffffff;
+                        margin-bottom:5px;
+                      "
+                    >
+                      REVIEW
+                    </div>
+
+                    <div
+                      style="
+                        font-size:12px;
+                        line-height:1.7;
+                        color:#888888;
+                      "
+                    >
+                      I'll go through your requirements, references,
+                      timeline, and budget.
+                    </div>
+
+                  </td>
+
+                </tr>
+              </table>
+
+
+              <!-- STEP 02 -->
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="margin-bottom:14px;"
+              >
+                <tr>
+
+                  <td
+                    valign="top"
+                    width="58"
+                    style="
+                      font-size:13px;
+                      font-weight:bold;
+                      color:#ff641c;
+                    "
+                  >
+                    02
+                  </td>
+
+                  <td valign="top">
+
+                    <div
+                      style="
+                        font-size:14px;
+                        font-weight:bold;
+                        color:#ffffff;
+                        margin-bottom:5px;
+                      "
+                    >
+                      DISCUSS
+                    </div>
+
+                    <div
+                      style="
+                        font-size:12px;
+                        line-height:1.7;
+                        color:#888888;
+                      "
+                    >
+                      If the project is a good fit, we'll connect to
+                      clarify the creative direction and expectations.
+                    </div>
+
+                  </td>
+
+                </tr>
+              </table>
+
+
+              <!-- STEP 03 -->
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+              >
+                <tr>
+
+                  <td
+                    valign="top"
+                    width="58"
+                    style="
+                      font-size:13px;
+                      font-weight:bold;
+                      color:#ff641c;
+                    "
+                  >
+                    03
+                  </td>
+
+                  <td valign="top">
+
+                    <div
+                      style="
+                        font-size:14px;
+                        font-weight:bold;
+                        color:#ffffff;
+                        margin-bottom:5px;
+                      "
+                    >
+                      CREATE
+                    </div>
+
+                    <div
+                      style="
+                        font-size:12px;
+                        line-height:1.7;
+                        color:#888888;
+                      "
+                    >
+                      Once everything is aligned, we'll move forward
+                      with the editing process and bring the concept
+                      to life.
+                    </div>
+
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+
+          <!-- CLOSING -->
+          <tr>
+            <td
+              style="
+                padding:34px 32px;
+                background:#151515;
+                border-top:1px solid #292929;
+                border-bottom:1px solid #292929;
+              "
+            >
+
+              <p
+                style="
+                  margin:0 0 22px 0;
+                  font-size:14px;
+                  line-height:1.8;
+                  color:#b8b8b8;
+                "
+              >
+                No action is needed from you right now.
+                I'll review everything and be in touch soon.
+              </p>
+
+              <p
+                style="
+                  margin:0;
+                  font-size:14px;
+                  line-height:1.7;
+                  color:#ffffff;
+                "
+              >
+                Looking forward to working with you.
+              </p>
+
+            </td>
+          </tr>
+
+
+          <!-- SIGNATURE -->
+          <tr>
+            <td style="padding:32px;">
+
+              <div
+                style="
+                  font-size:18px;
+                  font-weight:800;
+                  letter-spacing:1px;
+                  color:#ffffff;
+                  margin-bottom:5px;
+                "
+              >
+                NURA
+              </div>
+
+              <div
+                style="
+                  font-size:10px;
+                  letter-spacing:2px;
+                  color:#777777;
+                  margin-bottom:24px;
+                "
+              >
+                VIDEO EDITOR
+              </div>
+
+              <a
+                href="https://nura-video-portfolio.vercel.app/"
+                style="
+                  display:inline-block;
+                  padding:12px 20px;
+                  background:#ff641c;
+                  color:#ffffff;
+                  text-decoration:none;
+                  font-size:11px;
+                  font-weight:bold;
+                  letter-spacing:1px;
+                "
+              >
+                VIEW PORTFOLIO →
+              </a>
+
+            </td>
+          </tr>
+
+
+          <!-- FOOTER -->
+          <tr>
+            <td
+              style="
+                padding:22px 32px;
+                border-top:1px solid #292929;
+              "
+            >
+
+              <table
+                role="presentation"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+              >
+                <tr>
+
+                  <td
+                    style="
+                      font-size:10px;
+                      color:#555555;
+                    "
+                  >
+                    © 2026 NURA
+                  </td>
+
+                  <td
+                    align="right"
+                    style="
+                      font-size:10px;
+                      color:#555555;
+                    "
+                  >
+                    Creative editing for brands & creators
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+`.trim(),
           html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 620px;">
               <h2>Thanks for reaching out, ${escapeHtml(cleanName)}.</h2>

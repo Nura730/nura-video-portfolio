@@ -203,6 +203,18 @@ app.post("/api/contact", async (req, res) => {
      * =====================================================
      * 4. SEND ENQUIRY TO PORTFOLIO OWNER
      * =====================================================
+     *
+     * FREE RESEND SETUP:
+     *
+     * The email is always sent to CONTACT_RECEIVER.
+     *
+     * The client's email is used as replyTo.
+     *
+     * Therefore:
+     *
+     * YOU receive the enquiry.
+     * When you click Reply in Gmail,
+     * the reply goes to the client.
      */
 
     console.log(
@@ -212,7 +224,9 @@ app.post("/api/contact", async (req, res) => {
     const { data: enquiryData, error: enquiryError } =
       await resend.emails.send({
         from: `Nura Portfolio <${RESEND_FROM_EMAIL}>`,
+
         to: [process.env.CONTACT_RECEIVER],
+
         replyTo: cleanEmail,
 
         subject: `New Video Editing Project — ${cleanName}`,
@@ -242,6 +256,10 @@ Project + References:
 ${cleanProject}
 
 --------------------------------
+Client email: ${cleanEmail}
+
+Reply directly to this email to contact the client.
+
 Sent from Nura Video Portfolio
         `.trim(),
 
@@ -253,6 +271,7 @@ Sent from Nura Video Portfolio
               color: #222;
             "
           >
+
             <h2>New Video Editing Project</h2>
 
             <p>
@@ -302,11 +321,27 @@ Sent from Nura Video Portfolio
             <hr />
 
             <p>
+              <strong>Client email:</strong>
+              ${cleanEmail}
+            </p>
+
+            <p>
+              Reply directly to this email to contact the client.
+            </p>
+
+            <p>
               Sent from <strong>Nura Video Portfolio</strong>.
             </p>
+
           </div>
         `,
       });
+
+    /*
+     * -----------------------------------------------------
+     * 5. CHECK RESEND RESULT
+     * -----------------------------------------------------
+     */
 
     if (enquiryError) {
       console.error(
@@ -322,215 +357,25 @@ Sent from Nura Video Portfolio
     }
 
     console.log(
-      `Enquiry email sent successfully. ID: ${enquiryData?.id || "unknown"}`
+      `Enquiry email sent successfully. ID: ${
+        enquiryData?.id || "unknown"
+      }`
     );
 
     /*
      * =====================================================
-     * 5. CONFIRMATION EMAIL TO CLIENT
+     * 6. SUCCESS
      * =====================================================
      *
-     * This is intentionally separate.
+     * IMPORTANT:
      *
-     * If the confirmation fails, the main enquiry has
-     * already reached Nura, so we still return success.
-     */
-
-    if (process.env.SEND_CONFIRMATION_EMAIL !== "false") {
-      try {
-        const {
-          data: confirmationData,
-          error: confirmationError,
-        } = await resend.emails.send({
-          from: `Nura — Video Editor <${RESEND_FROM_EMAIL}>`,
-          to: [cleanEmail],
-          replyTo: process.env.CONTACT_RECEIVER,
-
-          subject:
-            "Thanks for reaching out — Nura Video Editor",
-
-          text: `
-Hi ${cleanName},
-
-Thanks for reaching out through my portfolio.
-
-I've received your project enquiry and will review the details shortly. I'll get back to you as soon as possible.
-
-PROJECT DETAILS
---------------------------------
-
-Video Type:
-${cleanVideoType}
-
-Deadline:
-${cleanDeadline || "Not specified"}
-
-Budget:
-${cleanBudget || "Not specified"}
-
-Social / Channel:
-${cleanSocial || "Not specified"}
-
-Project + References:
-${cleanProject}
-
---------------------------------
-
-If you have any additional references, files, or details you'd like to share, feel free to reply to this email.
-
-Best,
-Nura
-Video Editor
-
-Nura Video Portfolio
-          `.trim(),
-
-          html: `
-            <div
-              style="
-                margin: 0;
-                padding: 40px 20px;
-                background: #f5f5f5;
-                font-family: Arial, Helvetica, sans-serif;
-                color: #161616;
-              "
-            >
-              <div
-                style="
-                  max-width: 600px;
-                  margin: 0 auto;
-                  background: #ffffff;
-                  padding: 40px;
-                  border-radius: 12px;
-                "
-              >
-
-                <h1
-                  style="
-                    margin: 0 0 24px;
-                    font-size: 28px;
-                    line-height: 1.2;
-                  "
-                >
-                  Thanks for reaching out.
-                </h1>
-
-                <p>
-                  Hi ${cleanName},
-                </p>
-
-                <p>
-                  Thanks for reaching out through my portfolio.
-                </p>
-
-                <p>
-                  I've received your project enquiry and will
-                  review the details shortly. I'll get back to
-                  you as soon as possible.
-                </p>
-
-                <div
-                  style="
-                    margin: 32px 0;
-                    padding: 24px;
-                    background: #f7f7f7;
-                    border-radius: 8px;
-                  "
-                >
-                  <h2
-                    style="
-                      margin: 0 0 20px;
-                      font-size: 18px;
-                    "
-                  >
-                    Project Details
-                  </h2>
-
-                  <p>
-                    <strong>Video Type</strong><br />
-                    ${cleanVideoType}
-                  </p>
-
-                  <p>
-                    <strong>Deadline</strong><br />
-                    ${cleanDeadline || "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Budget</strong><br />
-                    ${cleanBudget || "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Social / Channel</strong><br />
-                    ${cleanSocial || "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Project + References</strong><br />
-                    ${cleanProject.replace(/\n/g, "<br />")}
-                  </p>
-                </div>
-
-                <p>
-                  If you have any additional references, files,
-                  or details you'd like to share, simply reply
-                  to this email.
-                </p>
-
-                <p style="margin-top: 32px;">
-                  Best,<br />
-                  <strong>Nura</strong><br />
-                  Video Editor
-                </p>
-
-                <hr
-                  style="
-                    margin: 32px 0;
-                    border: none;
-                    border-top: 1px solid #dddddd;
-                  "
-                />
-
-                <p
-                  style="
-                    margin: 0;
-                    font-size: 13px;
-                    color: #777777;
-                  "
-                >
-                  Sent from Nura Video Portfolio
-                </p>
-
-              </div>
-            </div>
-          `,
-        });
-
-        if (confirmationError) {
-          console.error(
-            "Confirmation email failed:",
-            confirmationError
-          );
-        } else {
-          console.log(
-            `Confirmation email sent successfully to ${cleanEmail}. ID: ${
-              confirmationData?.id || "unknown"
-            }`
-          );
-        }
-      } catch (confirmationError) {
-        console.error(
-          "Confirmation email failed:",
-          confirmationError
-        );
-      }
-    }
-
-    /*
-     * =====================================================
-     * 6. SUCCESS RESPONSE
-     * =====================================================
+     * We intentionally DO NOT send a confirmation
+     * email to the client.
+     *
+     * Resend testing mode only allows sending to the
+     * account's own email address.
+     *
+     * The enquiry has already reached Nura.
      */
 
     return res.status(200).json({
@@ -538,6 +383,7 @@ Nura Video Portfolio
       message:
         "Project enquiry sent successfully. I'll get back to you soon.",
     });
+
   } catch (error) {
     /*
      * =====================================================
@@ -576,10 +422,14 @@ app.get("/{*splat}", (_req, res) => {
  */
 
 app.listen(PORT, () => {
-  console.log(`Contact backend running on port ${PORT}`);
+  console.log(
+    `Contact backend running on port ${PORT}`
+  );
 
   if (process.env.RESEND_API_KEY) {
-    console.log("Resend API key detected successfully.");
+    console.log(
+      "Resend API key detected successfully."
+    );
   } else {
     console.error(
       "RESEND_API_KEY is missing."

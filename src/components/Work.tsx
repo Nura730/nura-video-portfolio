@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const featuredWork = workItems.filter((item) => item.featured);
 const moreWork = workItems.filter((item) => !item.featured);
+const VIDEO_PLAY_EVENT = "portfolio-video-play";
 
 export default function Work() {
   const workRef = useRef<HTMLElement | null>(null);
@@ -34,6 +35,50 @@ export default function Work() {
   const activeVideoRef =
     useRef<HTMLVideoElement | null>(null);
 
+  useEffect(() => {
+  const handleOtherVideoPlay = (event: Event) => {
+    const customEvent = event as CustomEvent<HTMLVideoElement>;
+    const activeVideo = customEvent.detail;
+
+    if (!activeVideo) return;
+
+    // Pause every Work video except the one that just started.
+    Object.values(featuredVideoRefs.current).forEach((video) => {
+      if (!video || video === activeVideo) return;
+
+      video.pause();
+      video.muted = true;
+    });
+
+    Object.values(moreCardVideoRefs.current).forEach((video) => {
+      if (!video || video === activeVideo) return;
+
+      video.pause();
+      video.muted = true;
+    });
+
+    if (
+      expandedVideoRef.current &&
+      expandedVideoRef.current !== activeVideo
+    ) {
+      expandedVideoRef.current.pause();
+      expandedVideoRef.current.muted = true;
+    }
+  };
+
+  window.addEventListener(
+    VIDEO_PLAY_EVENT,
+    handleOtherVideoPlay
+  );
+
+  return () => {
+    window.removeEventListener(
+      VIDEO_PLAY_EVENT,
+      handleOtherVideoPlay
+    );
+  };
+}, []);
+
   /*
    * ============================================================
    * STATE
@@ -53,23 +98,7 @@ export default function Work() {
     useState(false);
 
 
-  const previewMoreWorkIds = [
-    "tripxplo-03",
-    "personal-13",
-    "personal-09",
-    "tripxplo-01",
-    "college-14",
-    "personal-07",
-  ];
-
-  const previewMoreWork = previewMoreWorkIds
-    .map((id) =>
-      moreWork.find((item) => item.id === id)
-    )
-    .filter(
-      (item): item is (typeof moreWork)[number] =>
-        Boolean(item)
-    );
+  const previewMoreWork = moreWork.slice(0, 6);
 
   const visibleMoreWork = showAllMoreWork
     ? moreWork
@@ -214,7 +243,14 @@ export default function Work() {
     try {
       await video.play();
 
-      activeVideoRef.current = video;
+window.dispatchEvent(
+  new CustomEvent<HTMLVideoElement>(
+    VIDEO_PLAY_EVENT,
+    { detail: video }
+  )
+);
+
+activeVideoRef.current = video;
 
       setPlayingFeatured(id);
     } catch (error) {
@@ -234,7 +270,14 @@ export default function Work() {
       try {
         await video.play();
 
-        activeVideoRef.current = video;
+window.dispatchEvent(
+  new CustomEvent<HTMLVideoElement>(
+    VIDEO_PLAY_EVENT,
+    { detail: video }
+  )
+);
+
+activeVideoRef.current = video;
 
         setPlayingFeatured(id);
       } catch (playError) {
@@ -317,7 +360,14 @@ export default function Work() {
         try {
           await video.play();
 
-          activeVideoRef.current = video;
+window.dispatchEvent(
+  new CustomEvent<HTMLVideoElement>(
+    VIDEO_PLAY_EVENT,
+    { detail: video }
+  )
+);
+
+activeVideoRef.current = video;
 
           setMoreReelPlaying(true);
           setMoreReelMuted(false);
@@ -331,6 +381,13 @@ export default function Work() {
 
           try {
             await video.play();
+
+            window.dispatchEvent(
+              new CustomEvent<HTMLVideoElement>(
+                VIDEO_PLAY_EVENT,
+                { detail: video }
+              )
+            );
 
             activeVideoRef.current = video;
 
@@ -395,6 +452,13 @@ export default function Work() {
       try {
         await video.play();
 
+        window.dispatchEvent(
+          new CustomEvent<HTMLVideoElement>(
+            VIDEO_PLAY_EVENT,
+            { detail: video }
+          )
+        );
+
         activeVideoRef.current = video;
 
         setMoreReelPlaying(true);
@@ -455,6 +519,14 @@ export default function Work() {
       try {
         if (video.paused) {
           await video.play();
+
+          window.dispatchEvent(
+            new CustomEvent<HTMLVideoElement>(
+              VIDEO_PLAY_EVENT,
+              { detail: video }
+            )
+          );
+
           setMoreReelPlaying(true);
         }
       } catch (error) {
@@ -638,10 +710,17 @@ export default function Work() {
    */
 
   useEffect(() => {
+    // Capture snapshot of refs at effect-run time so cleanup
+    // doesn't read stale .current values.
+    const featuredVideos = Object.values(
+      featuredVideoRefs.current
+    );
+    const moreCardVideos = Object.values(
+      moreCardVideoRefs.current
+    );
+
     return () => {
-      Object.values(
-        featuredVideoRefs.current
-      ).forEach((video) => {
+      featuredVideos.forEach((video) => {
         if (!video) return;
 
         video.pause();
@@ -649,9 +728,7 @@ export default function Work() {
         video.currentTime = 0;
       });
 
-      Object.values(
-        moreCardVideoRefs.current
-      ).forEach((video) => {
+      moreCardVideos.forEach((video) => {
         if (!video) return;
 
         video.pause();
@@ -660,6 +737,20 @@ export default function Work() {
       });
     };
   }, []);
+
+  /*
+   * ============================================================
+   * EXPAND / COLLAPSE MORE WORK REFRESH
+   * ============================================================
+   */
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 50);
+
+    return () => clearTimeout(timeout);
+  }, [showAllMoreWork]);
 
   /*
    * ============================================================
@@ -747,24 +838,18 @@ export default function Work() {
        * --------------------------------------------------------
        */
 
-      gsap.from(
-        ".more-reel-card",
-        {
-          y: 50,
-          opacity: 0,
-          scale: 0.95,
-          duration: 0.75,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger:
-              ".more-reels-grid",
-            start: "top 85%",
-            toggleActions:
-              "play none none reverse",
-          },
-        }
-      );
+      gsap.from(".more-reel-card", {
+  opacity: 0,
+  scale: 0.96,
+  duration: 0.7,
+  stagger: 0.08,
+  ease: "power3.out",
+  scrollTrigger: {
+    trigger: ".more-reels-grid",
+    start: "top 85%",
+    once: true,
+  },
+});
 
       /*
        * --------------------------------------------------------
@@ -1154,6 +1239,7 @@ export default function Work() {
                   <button
                     className="more-reel-play"
                     type="button"
+                    aria-label={`Play ${item.title} reel`}
                     onClick={() =>
                       openMoreReel(
                         item.id
@@ -1255,7 +1341,6 @@ export default function Work() {
               loop
               playsInline
               preload="auto"
-              autoPlay
               onPlay={() => {
                 setMoreReelPlaying(
                   true

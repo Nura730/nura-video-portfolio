@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import "./Contact.css";
 
 const videoTypes = [
@@ -9,57 +10,104 @@ const videoTypes = [
   "Other",
 ];
 
+type FormState = {
+  name: string;
+  email: string;
+  deadline: string;
+  budget: string;
+  social: string;
+  project: string;
+};
+
+type SubmitStatus = "idle" | "sending" | "success" | "error";
+
+const initialForm: FormState = {
+  name: "",
+  email: "",
+  deadline: "",
+  budget: "",
+  social: "",
+  project: "",
+};
+
 export default function Contact() {
   const [videoType, setVideoType] = useState("");
+  const [form, setForm] = useState<FormState>(initialForm);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState("");
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    deadline: "",
-    budget: "",
-    social: "",
-    project: "",
-  });
-
-  const updateField = (key: string, value: string) => {
+  const updateField = (key: keyof FormState, value: string) => {
     setForm((prev) => ({
       ...prev,
       [key]: value,
     }));
+
+    if (status !== "idle") {
+      setStatus("idle");
+      setStatusMessage("");
+    }
   };
 
-  const sendProject = () => {
-    const subject = `Video Editing Project from ${form.name || "Website Visitor"}`;
+  const sendProject = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    const body = `
-Name: ${form.name}
-Email: ${form.email}
-Video Type: ${videoType}
-Deadline: ${form.deadline}
-Budget: ${form.budget}
-Social / Channel: ${form.social}
+    if (status === "sending") return;
 
-Project:
-${form.project}
-    `;
+    setStatus("sending");
+    setStatusMessage("");
 
-    window.location.href =
-      `mailto:aruneditor0703@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...form,
+          videoType,
+        }),
+      });
+
+      const data = (await response.json()) as {
+        success?: boolean;
+        message?: string;
+      };
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || "Unable to send your project enquiry."
+        );
+      }
+
+      setStatus("success");
+      setStatusMessage(
+        "Project enquiry sent successfully. I'll get back to you soon."
+      );
+
+      setForm(initialForm);
+      setVideoType("");
+    } catch (error) {
+      console.error("Contact form error:", error);
+
+      setStatus("error");
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    }
   };
 
   return (
-    <main className="contact-page">
-
+    <div className="contact-page">
       {/* =====================================================
           MAIN CONTACT AREA
       ===================================================== */}
 
       <section className="contact-main" id="contact">
-
         {/* ================= LEFT ================= */}
 
         <div className="contact-left">
-
           <div className="contact-section-number">
             <span className="contact-section-dot" />
             07 / LET'S WORK
@@ -72,7 +120,6 @@ ${form.project}
           </h1>
 
           <div className="contact-intro">
-
             <span className="intro-star">✦</span>
 
             <p>
@@ -82,60 +129,45 @@ ${form.project}
               <br />
               an edit that fits the idea.
             </p>
-
           </div>
 
-          <a
-            href="#project-form"
-            className="contact-cta"
-          >
+          <a href="#project-form" className="contact-cta">
             <span>LET'S MAKE IT WORTH WATCHING</span>
             <b>↗</b>
           </a>
 
-
           {/* DIRECT CONTACT */}
 
           <div className="contact-direct">
-
             <div className="direct-header">
-
               <span>DIRECT CONTACT</span>
 
               <span className="accepting">
                 <i />
                 CURRENTLY ACCEPTING PROJECTS
               </span>
-
             </div>
 
-
             <div className="contact-cards">
-
               {/* EMAIL */}
 
               <a
                 href="mailto:aruneditor0703@gmail.com"
                 className="contact-card"
               >
-
                 <div className="card-top">
                   <span className="card-icon">✉</span>
                   <span className="card-arrow">↗</span>
                 </div>
 
-                <span className="card-label">
-                  EMAIL
-                </span>
+                <span className="card-label">EMAIL</span>
 
                 <strong>
                   aruneditor0703
                   <br />
                   @gmail.com
                 </strong>
-
               </a>
-
 
               {/* WHATSAPP */}
 
@@ -145,24 +177,19 @@ ${form.project}
                 rel="noreferrer"
                 className="contact-card"
               >
-
                 <div className="card-top">
                   <span className="card-icon">◉</span>
                   <span className="card-arrow">↗</span>
                 </div>
 
-                <span className="card-label">
-                  WHATSAPP
-                </span>
+                <span className="card-label">WHATSAPP</span>
 
                 <strong>
                   +91 93616
                   <br />
                   83058
                 </strong>
-
               </a>
-
 
               {/* INSTAGRAM */}
 
@@ -172,22 +199,15 @@ ${form.project}
                 rel="noreferrer"
                 className="contact-card"
               >
-
                 <div className="card-top">
                   <span className="card-icon">◎</span>
                   <span className="card-arrow">↗</span>
                 </div>
 
-                <span className="card-label">
-                  INSTAGRAM
-                </span>
+                <span className="card-label">INSTAGRAM</span>
 
-                <strong>
-                  @itz._.nura._.7
-                </strong>
-
+                <strong>@itz._.nura._.7</strong>
               </a>
-
 
               {/* LINKEDIN */}
 
@@ -197,53 +217,32 @@ ${form.project}
                 rel="noreferrer"
                 className="contact-card"
               >
-
                 <div className="card-top">
-                  <span className="card-icon linkedin-icon">
-                    in
-                  </span>
+                  <span className="card-icon linkedin-icon">in</span>
 
                   <span className="card-arrow">↗</span>
                 </div>
 
-                <span className="card-label">
-                  LINKEDIN
-                </span>
+                <span className="card-label">LINKEDIN</span>
 
-                <strong>
-                  /nura-dev
-                </strong>
-
+                <strong>/nura-dev</strong>
               </a>
-
             </div>
-
           </div>
-
         </div>
-
 
         {/* ================= RIGHT ================= */}
 
-        <div
-          className="project-form-card"
-          id="project-form"
-        >
-
+        <div className="project-form-card" id="project-form">
           <div className="form-heading-row">
-
             <div>
-
-              <span className="form-eyebrow">
-                PROJECT ENQUIRY
-              </span>
+              <span className="form-eyebrow">PROJECT ENQUIRY</span>
 
               <h2>
                 LET'S CREATE
                 <br />
                 SOMETHING <span>GOOD.</span>
               </h2>
-
             </div>
 
             <p>
@@ -251,28 +250,17 @@ ${form.project}
               <br />
               and I'll get back to you.
             </p>
-
           </div>
-
 
           <div className="form-divider" />
 
-
           {/* FORM */}
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendProject();
-            }}
-          >
-
+          <form onSubmit={sendProject}>
             <div className="form-grid">
-
               {/* NAME */}
 
               <label className="contact-field">
-
                 <span>
                   <b>01</b> / NAME
                 </span>
@@ -285,15 +273,13 @@ ${form.project}
                     updateField("name", e.target.value)
                   }
                   required
+                  disabled={status === "sending"}
                 />
-
               </label>
-
 
               {/* EMAIL */}
 
               <label className="contact-field">
-
                 <span>
                   <b>02</b> / EMAIL
                 </span>
@@ -306,57 +292,49 @@ ${form.project}
                     updateField("email", e.target.value)
                   }
                   required
+                  disabled={status === "sending"}
                 />
-
               </label>
-
 
               {/* VIDEO TYPE */}
 
               <label className="contact-field">
-
                 <span>
                   <b>03</b> / VIDEO TYPE
                 </span>
 
                 <div className="select-wrap">
-
                   <select
                     value={videoType}
-                    onChange={(e) =>
-                      setVideoType(e.target.value)
-                    }
-                    required
-                  >
+                    onChange={(e) => {
+                      setVideoType(e.target.value);
 
+                      if (status !== "idle") {
+                        setStatus("idle");
+                        setStatusMessage("");
+                      }
+                    }}
+                    required
+                    disabled={status === "sending"}
+                  >
                     <option value="" disabled>
                       Select a type
                     </option>
 
                     {videoTypes.map((type) => (
-                      <option
-                        key={type}
-                        value={type}
-                      >
+                      <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
-
                   </select>
 
-                  <span className="select-arrow">
-                    ↓
-                  </span>
-
+                  <span className="select-arrow">↓</span>
                 </div>
-
               </label>
-
 
               {/* DEADLINE */}
 
               <label className="contact-field">
-
                 <span>
                   <b>04</b> / DEADLINE
                 </span>
@@ -368,15 +346,13 @@ ${form.project}
                   onChange={(e) =>
                     updateField("deadline", e.target.value)
                   }
+                  disabled={status === "sending"}
                 />
-
               </label>
-
 
               {/* BUDGET */}
 
               <label className="contact-field">
-
                 <span>
                   <b>05</b> / BUDGET
                 </span>
@@ -388,15 +364,13 @@ ${form.project}
                   onChange={(e) =>
                     updateField("budget", e.target.value)
                   }
+                  disabled={status === "sending"}
                 />
-
               </label>
-
 
               {/* SOCIAL */}
 
               <label className="contact-field">
-
                 <span>
                   <b>06</b> / SOCIAL / CHANNEL
                 </span>
@@ -408,17 +382,14 @@ ${form.project}
                   onChange={(e) =>
                     updateField("social", e.target.value)
                   }
+                  disabled={status === "sending"}
                 />
-
               </label>
-
             </div>
-
 
             {/* PROJECT */}
 
             <label className="contact-field project-field">
-
               <span>
                 <b>07</b> / PROJECT + REFERENCES
               </span>
@@ -430,17 +401,14 @@ ${form.project}
                   updateField("project", e.target.value)
                 }
                 required
+                disabled={status === "sending"}
               />
-
             </label>
-
 
             {/* FORM BOTTOM */}
 
             <div className="form-bottom">
-
               <div className="privacy-note">
-
                 <span>◇</span>
 
                 <p>
@@ -448,39 +416,44 @@ ${form.project}
                   <br />
                   to discuss your project.
                 </p>
-
               </div>
 
               <button
                 type="submit"
                 className="send-project"
+                disabled={status === "sending"}
               >
-
                 <span>
-                  SEND PROJECT
+                  {status === "sending"
+                    ? "SENDING..."
+                    : status === "success"
+                      ? "SENT ✓"
+                      : "SEND PROJECT"}
                 </span>
 
-                <b>↗</b>
-
+                <b>{status === "sending" ? "…" : "↗"}</b>
               </button>
-
             </div>
 
+            {statusMessage && (
+              <p
+                className={`contact-form-status contact-form-status-${status}`}
+                role="status"
+                aria-live="polite"
+              >
+                {statusMessage}
+              </p>
+            )}
           </form>
-
         </div>
-
       </section>
-
 
       {/* =====================================================
           FINAL CTA
       ===================================================== */}
 
       <section className="contact-final">
-
         <div className="final-heading">
-
           <span>✦</span>
 
           <h2>
@@ -488,85 +461,59 @@ ${form.project}
             <br />
             WORTH <strong>WATCHING.</strong>
           </h2>
-
         </div>
 
         <div className="final-side">
-
-          <span>
-            LET'S CREATE IMPACT.
-          </span>
-
+          <span>LET'S CREATE IMPACT.</span>
           <i />
-
         </div>
-
       </section>
-
 
       {/* =====================================================
           FOOTER
       ===================================================== */}
 
       <footer className="contact-footer">
-
         <div className="footer-brand">
-
           <strong>NURA</strong>
 
-          <span>
-            VIDEO EDITOR
-          </span>
-
+          <span>VIDEO EDITOR</span>
         </div>
 
-
         <nav className="footer-nav">
-
           <a href="#work">WORK</a>
           <a href="#services">SERVICES</a>
           <a href="#tools">TOOLS</a>
           <a href="#about">ABOUT</a>
-          <a href="#contact">PROCESS</a>
-
+          <a href="#process">PROCESS</a>
         </nav>
 
-
         <div className="footer-socials">
-
-          <a href="https://www.instagram.com/itz._.nura._.7">
+          <a
+            href="https://www.instagram.com/itz._.nura._.7"
+            target="_blank"
+            rel="noreferrer"
+          >
             ◎
           </a>
 
-          <a href="https://www.linkedin.com/in/nura-dev">
+          <a
+            href="https://www.linkedin.com/in/nura-dev"
+            target="_blank"
+            rel="noreferrer"
+          >
             in
           </a>
 
-          <a href="mailto:aruneditor0703@gmail.com">
-            ✉
-          </a>
-
+          <a href="mailto:aruneditor0703@gmail.com">✉</a>
         </div>
-
 
         <div className="footer-bottom">
-
-          <span>
-            © 2026 NURA — VIDEO EDITOR
-          </span>
-
-          <span>
-            THANKS FOR SCROLLING.
-          </span>
-
-          <span>
-            MADE TO MOVE.
-          </span>
-
+          <span>© 2026 NURA — VIDEO EDITOR</span>
+          <span>THANKS FOR SCROLLING.</span>
+          <span>MADE TO MOVE.</span>
         </div>
-
       </footer>
-
-    </main>
+    </div>
   );
 }

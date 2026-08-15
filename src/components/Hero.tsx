@@ -1,4 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./HeroPolish.css";
@@ -6,366 +11,565 @@ import "./HeroPolish.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const HERO_REEL = "/videos/tripxplo-07.mp4";
+const VIDEO_PLAY_EVENT = "portfolio-video-play";
 
 export default function Hero() {
-const heroRef = useRef<HTMLElement | null>(null);
-const reelRef = useRef<HTMLDivElement | null>(null);
-const reelInnerRef = useRef<HTMLDivElement | null>(null);
-const videoRef = useRef<HTMLVideoElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const reelRef = useRef<HTMLDivElement | null>(null);
+  const reelInnerRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-const [isPlaying, setIsPlaying] = useState(true);
-const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
-useLayoutEffect(() => {
-const hero = heroRef.current;
-if (!hero) return;
+  /*
+   * ============================================================
+   * STOP HERO WHEN ANOTHER PORTFOLIO VIDEO STARTS
+   * ============================================================
+   */
 
-const ctx = gsap.context(() => { 
-  const intro = gsap.timeline({ 
-    defaults: { ease: "power4.out" }, 
-  }); 
+  useEffect(() => {
+    const video = videoRef.current;
 
-  intro 
-    .from(".hero-label", { 
-      y: 24, 
-      opacity: 0, 
-      duration: 0.65, 
-    }) 
-    .from( 
-      ".hero-title-line", 
-      { 
-        yPercent: 115, 
-        opacity: 0, 
-        duration: 1.05, 
-        stagger: 0.1, 
-      }, 
-      "-=0.2" 
-    ) 
-    .from( 
-      ".hero-description", 
-      { 
-        y: 22, 
-        opacity: 0, 
-        duration: 0.7, 
-      }, 
-      "-=0.45" 
-    ) 
-    .from( 
-      ".hero-actions", 
-      { 
-        y: 18, 
-        opacity: 0, 
-        duration: 0.6, 
-      }, 
-      "-=0.4" 
-    ) 
-    .from( 
-      ".hero-availability", 
-      { 
-        y: 12, 
-        opacity: 0, 
-        duration: 0.5, 
-      }, 
-      "-=0.3" 
-    ) 
-    .from( 
-      ".hero-reel", 
-      { 
-        x: 90, 
-        opacity: 0, 
-        scale: 0.94, 
-        rotate: 2, 
-        duration: 1, 
-        ease: "power3.out", 
-      }, 
-      "-=0.8" 
-    ); 
+    if (!video) return;
 
-  gsap.to(".hero-content", { 
-    yPercent: -8, 
-    opacity: 0.72, 
-    ease: "none", 
-    scrollTrigger: { 
-      trigger: hero, 
-      start: "top top", 
-      end: "bottom top", 
-      scrub: true, 
-    }, 
-  }); 
+    const handleOtherVideoPlay = (event: Event) => {
+      const customEvent =
+        event as CustomEvent<HTMLVideoElement>;
 
-  gsap.to(".hero-orbit", { 
-    rotate: 360, 
-    duration: 24, 
-    repeat: -1, 
-    ease: "none", 
-  }); 
+      const activeVideo = customEvent.detail;
 
-  gsap.to(".hero-reel", { 
-    y: -7, 
-    duration: 3.2, 
-    repeat: -1, 
-    yoyo: true, 
-    ease: "sine.inOut", 
-    delay: 1.2, 
-  }); 
+      if (!activeVideo || activeVideo === video) return;
 
-  const primaryButton = hero.querySelector<HTMLElement>( 
-    ".hero-primary-button" 
-  ); 
+      video.pause();
+      video.muted = true;
 
-  const secondaryButton = hero.querySelector<HTMLElement>( 
-    ".hero-secondary-button" 
-  ); 
+      setIsPlaying(false);
+      setIsMuted(true);
+    };
 
-  [primaryButton, secondaryButton].forEach((button) => { 
-    if (!button) return; 
+    window.addEventListener(
+      VIDEO_PLAY_EVENT,
+      handleOtherVideoPlay
+    );
 
-    const enter = () => { 
-      gsap.to(button, { 
-        y: -4, 
-        duration: 0.25, 
-        ease: "power2.out", 
-      }); 
-    }; 
+    return () => {
+      window.removeEventListener(
+        VIDEO_PLAY_EVENT,
+        handleOtherVideoPlay
+      );
+    };
+  }, []);
 
-    const leave = () => { 
-      gsap.to(button, { 
-        y: 0, 
-        duration: 0.25, 
-        ease: "power2.out", 
-      }); 
-    }; 
+  /*
+   * ============================================================
+   * HERO GSAP
+   * ============================================================
+   */
 
-    button.addEventListener("mouseenter", enter); 
-    button.addEventListener("mouseleave", leave); 
-  }); 
-}, hero); 
+  useLayoutEffect(() => {
+    const hero = heroRef.current;
 
-return () => ctx.revert(); 
+    if (!hero) return;
 
+    const ctx = gsap.context(() => {
+      const intro = gsap.timeline({
+        defaults: {
+          ease: "power4.out",
+        },
+      });
 
-}, []);
+      intro
+        .from(".hero-label", {
+          y: 24,
+          opacity: 0,
+          duration: 0.65,
+        })
+        .from(
+          ".hero-title-line",
+          {
+            yPercent: 115,
+            opacity: 0,
+            duration: 1.05,
+            stagger: 0.1,
+          },
+          "-=0.2"
+        )
+        .from(
+          ".hero-description",
+          {
+            y: 22,
+            opacity: 0,
+            duration: 0.7,
+          },
+          "-=0.45"
+        )
+        .from(
+          ".hero-actions",
+          {
+            y: 18,
+            opacity: 0,
+            duration: 0.6,
+          },
+          "-=0.4"
+        )
+        .from(
+          ".hero-availability",
+          {
+            y: 12,
+            opacity: 0,
+            duration: 0.5,
+          },
+          "-=0.3"
+        )
+        .from(
+          ".hero-reel",
+          {
+            x: 90,
+            opacity: 0,
+            scale: 0.94,
+            rotate: 2,
+            duration: 1,
+            ease: "power3.out",
+          },
+          "-=0.8"
+        );
 
-useEffect(() => {
-const reel = reelRef.current;
-const inner = reelInnerRef.current;
+      gsap.to(".hero-content", {
+        yPercent: -8,
+        opacity: 0.72,
+        ease: "none",
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
 
-if (!reel || !inner) return; 
+      gsap.to(".hero-orbit", {
+        rotate: 360,
+        duration: 24,
+        repeat: -1,
+        ease: "none",
+      });
 
-const handleMouseMove = (event: MouseEvent) => { 
-  const rect = reel.getBoundingClientRect(); 
-  const x = event.clientX - rect.left; 
-  const y = event.clientY - rect.top; 
-  const centerX = rect.width / 2; 
-  const centerY = rect.height / 2; 
+      gsap.to(".hero-reel", {
+        y: -7,
+        duration: 3.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1.2,
+      });
 
-  gsap.to(reel, { 
-    rotateX: ((centerY - y) / centerY) * 4.5, 
-    rotateY: ((x - centerX) / centerX) * 4.5, 
-    duration: 0.45, 
-    ease: "power3.out", 
-    overwrite: true, 
-  }); 
+      const primaryButton =
+        hero.querySelector<HTMLElement>(
+          ".hero-primary-button"
+        );
 
-  gsap.to(inner, { 
-    x: ((x - centerX) / centerX) * 7, 
-    y: ((y - centerY) / centerY) * 7, 
-    duration: 0.45, 
-    ease: "power3.out", 
-    overwrite: true, 
-  }); 
-}; 
+      const secondaryButton =
+        hero.querySelector<HTMLElement>(
+          ".hero-secondary-button"
+        );
 
-const handleMouseLeave = () => { 
-  gsap.to(reel, { 
-    rotateX: 0, 
-    rotateY: 0, 
-    duration: 0.75, 
-    ease: "power3.out", 
-  }); 
+      [primaryButton, secondaryButton].forEach(
+        (button) => {
+          if (!button) return;
 
-  gsap.to(inner, { 
-    x: 0, 
-    y: 0, 
-    duration: 0.75, 
-    ease: "power3.out", 
-  }); 
-}; 
+          const enter = () => {
+            gsap.to(button, {
+              y: -4,
+              duration: 0.25,
+              ease: "power2.out",
+            });
+          };
 
-reel.addEventListener("mousemove", handleMouseMove); 
-reel.addEventListener("mouseleave", handleMouseLeave); 
+          const leave = () => {
+            gsap.to(button, {
+              y: 0,
+              duration: 0.25,
+              ease: "power2.out",
+            });
+          };
 
-return () => { 
-  reel.removeEventListener("mousemove", handleMouseMove); 
-  reel.removeEventListener("mouseleave", handleMouseLeave); 
-}; 
+          button.addEventListener(
+            "mouseenter",
+            enter
+          );
 
+          button.addEventListener(
+            "mouseleave",
+            leave
+          );
+        }
+      );
+    }, hero);
 
-}, []);
+    return () => {
+      ctx.revert();
+    };
+  }, []);
 
-useEffect(() => {
-const video = videoRef.current;
-if (!video) return;
+  /*
+   * ============================================================
+   * HERO REEL 3D HOVER
+   * ============================================================
+   */
 
-video.muted = true; 
+  useEffect(() => {
+    const reel = reelRef.current;
+    const inner = reelInnerRef.current;
 
-const playPromise = video.play(); 
-playPromise?.catch(() => setIsPlaying(false)); 
+    if (!reel || !inner) return;
 
-return () => { 
-  video.pause(); 
-}; 
+    const handleMouseMove = (
+      event: MouseEvent
+    ) => {
+      const rect =
+        reel.getBoundingClientRect();
 
+      const x =
+        event.clientX - rect.left;
 
-}, []);
+      const y =
+        event.clientY - rect.top;
 
-const togglePlayback = async () => {
-const video = videoRef.current;
-if (!video) return;
+      const centerX =
+        rect.width / 2;
 
-if (video.paused) { 
-  video.muted = false; 
-  setIsMuted(false); 
+      const centerY =
+        rect.height / 2;
 
-  try { 
-    await video.play(); 
-    setIsPlaying(true); 
-  } catch { 
-    video.muted = true; 
-    setIsMuted(true); 
-    await video.play().catch(() => undefined); 
-    setIsPlaying(!video.paused); 
-  } 
+      gsap.to(reel, {
+        rotateX:
+          ((centerY - y) / centerY) *
+          4.5,
+        rotateY:
+          ((x - centerX) / centerX) *
+          4.5,
+        duration: 0.45,
+        ease: "power3.out",
+        overwrite: true,
+      });
 
-  return; 
-} 
+      gsap.to(inner, {
+        x:
+          ((x - centerX) / centerX) *
+          7,
+        y:
+          ((y - centerY) / centerY) *
+          7,
+        duration: 0.45,
+        ease: "power3.out",
+        overwrite: true,
+      });
+    };
 
-video.pause(); 
-setIsPlaying(false); 
+    const handleMouseLeave = () => {
+      gsap.to(reel, {
+        rotateX: 0,
+        rotateY: 0,
+        duration: 0.75,
+        ease: "power3.out",
+      });
 
+      gsap.to(inner, {
+        x: 0,
+        y: 0,
+        duration: 0.75,
+        ease: "power3.out",
+      });
+    };
 
-};
+    reel.addEventListener(
+      "mousemove",
+      handleMouseMove
+    );
 
-const toggleMute = () => {
-const video = videoRef.current;
-if (!video) return;
+    reel.addEventListener(
+      "mouseleave",
+      handleMouseLeave
+    );
 
-video.muted = !video.muted; 
-setIsMuted(video.muted); 
+    return () => {
+      reel.removeEventListener(
+        "mousemove",
+        handleMouseMove
+      );
 
+      reel.removeEventListener(
+        "mouseleave",
+        handleMouseLeave
+      );
+    };
+  }, []);
 
-};
+  /*
+   * ============================================================
+   * HERO VIDEO AUTOPLAY
+   * ============================================================
+   */
 
-return (
-<section className="hero hero-polished" ref={heroRef}>
+  useEffect(() => {
+    const video = videoRef.current;
 
-  <div className="hero-glow hero-glow-one" aria-hidden="true" /> 
-  <div className="hero-glow hero-glow-two" aria-hidden="true" /> 
+    if (!video) return;
 
-  <div className="hero-content"> 
-    <div className="hero-left"> 
-      <div className="hero-label">FREELANCE VIDEO EDITOR</div> 
+    video.muted = true;
 
-      <div 
-        className="hero-title" 
-        aria-label="Video editor and creative storyteller" 
-      > 
-        <div className="hero-title-line">VIDEO EDITOR</div> 
-        <div className="hero-title-line">&amp; CREATIVE</div> 
-        <div className="hero-title-line">STORYTELLER.</div> 
-      </div> 
+    const playPromise = video.play();
 
-      <p className="hero-description"> 
-        I turn raw footage into sharp, story-driven edits for social, 
-        creators and brands — built around pacing, sound and attention. 
-      </p> 
+    playPromise?.catch(() => {
+      setIsPlaying(false);
+    });
 
-      <div className="hero-actions"> 
-        <a href="#work" className="hero-primary-button"> 
-          VIEW MY WORK <span>↗</span> 
-        </a> 
+    return () => {
+      video.pause();
+    };
+  }, []);
 
-        <a
-  href="#contact"
-  className="hero-secondary-button"
-  data-magnetic
->
-  LET&apos;S TALK
-</a>
-      </div> 
+  /*
+   * ============================================================
+   * HERO PLAY / PAUSE
+   * ============================================================
+   */
 
-      <div className="hero-availability"> 
-        <span className="availability-dot" /> 
-        OPEN FOR NEW EDITING PROJECTS 
-      </div> 
-    </div> 
+  const togglePlayback = async () => {
+    const video = videoRef.current;
 
-    <div className="hero-reel" ref={reelRef}> 
-      <div className="reel-frame"> 
-        <div className="reel-topline"> 
-          <span>SELECTED WORK</span> 
-          <span>01 / 01</span> 
-        </div> 
+    if (!video) return;
 
-        <div className="reel-inner" ref={reelInnerRef}> 
-          <video 
-            ref={videoRef} 
-            className="hero-reel-video" 
-            src={HERO_REEL} 
-            muted 
-            loop 
-            playsInline 
-            preload="metadata" 
-            aria-label="Selected video editing work" 
-            onPlay={() => setIsPlaying(true)} 
-            onPause={() => setIsPlaying(false)} 
-          /> 
+    if (video.paused) {
+      video.muted = false;
+      setIsMuted(false);
 
-          <div className="reel-shade" aria-hidden="true" /> 
+      try {
+        await video.play();
 
-          <div className="reel-center-meta"> 
-            <span>EDIT / SHORT-FORM</span> 
-            <strong>{isPlaying ? "PLAYING" : "PAUSED"}</strong> 
-          </div> 
+        window.dispatchEvent(
+          new CustomEvent<HTMLVideoElement>(
+            VIDEO_PLAY_EVENT,
+            { detail: video }
+          )
+        );
 
-          <div className="reel-controls"> 
-            <button 
-              className="reel-play" 
-              type="button" 
-              onClick={togglePlayback} 
-              aria-label={ 
-                isPlaying ? "Pause selected reel" : "Play selected reel" 
-              } 
-            > 
-              {isPlaying ? "PAUSE" : "PLAY REEL"} 
-              <span>{isPlaying ? "Ⅱ" : "▶"}</span> 
-            </button> 
+        setIsPlaying(true);
+      } catch {
+        video.muted = true;
+        setIsMuted(true);
 
-            <button 
-              className="reel-sound" 
-              type="button" 
-              onClick={toggleMute} 
-              aria-label={isMuted ? "Turn sound on" : "Turn sound off"} 
-            > 
-              {isMuted ? "SOUND OFF" : "SOUND ON"} 
-            </button> 
-          </div> 
-        </div> 
-      </div> 
+        try {
+          await video.play();
 
-      <div className="reel-info"> 
-        <span>SELECTED WORK</span> 
-        <strong>SHORT-FORM • SOCIAL • STORY</strong> 
-      </div> 
-    </div> 
-  </div> 
+          window.dispatchEvent(
+            new CustomEvent<HTMLVideoElement>(
+              VIDEO_PLAY_EVENT,
+              { detail: video }
+            )
+          );
 
-  <div className="hero-scroll"> 
-    <span>SCROLL</span> 
-    <i /> 
-  </div> 
-</section> 
+          setIsPlaying(!video.paused);
+        } catch {
+          setIsPlaying(false);
+        }
+      }
 
+      return;
+    }
 
-);
+    video.pause();
+    setIsPlaying(false);
+  };
+
+  /*
+   * ============================================================
+   * HERO AUDIO
+   * ============================================================
+   */
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
+
+  return (
+    <section
+      className="hero hero-polished"
+      id="home"
+      ref={heroRef}
+    >
+      <div
+        className="hero-glow hero-glow-one"
+        aria-hidden="true"
+      />
+
+      <div
+        className="hero-glow hero-glow-two"
+        aria-hidden="true"
+      />
+
+      <div className="hero-content">
+        <div className="hero-left">
+          <div className="hero-label">
+            FREELANCE VIDEO EDITOR
+          </div>
+
+          <div
+            className="hero-title"
+            aria-label="Video editor and creative storyteller"
+          >
+            <div className="hero-title-line">
+              VIDEO EDITOR
+            </div>
+
+            <div className="hero-title-line">
+              &amp; CREATIVE
+            </div>
+
+            <div className="hero-title-line">
+              STORYTELLER.
+            </div>
+          </div>
+
+          <p className="hero-description">
+            I turn raw footage into sharp,
+            story-driven edits for social,
+            creators and brands — built around
+            pacing, sound and attention.
+          </p>
+
+          <div className="hero-actions">
+            <a
+              href="#work"
+              className="hero-primary-button"
+            >
+              VIEW MY WORK <span>↗</span>
+            </a>
+
+            <a
+              href="#contact"
+              className="hero-secondary-button"
+              data-magnetic
+            >
+              LET&apos;S TALK
+            </a>
+          </div>
+
+          <div className="hero-availability">
+            <span className="availability-dot" />
+            OPEN FOR NEW EDITING PROJECTS
+          </div>
+        </div>
+
+        <div
+          className="hero-reel"
+          ref={reelRef}
+        >
+          <div className="reel-frame">
+            <div className="reel-topline">
+              <span>SELECTED WORK</span>
+              <span>01 / 01</span>
+            </div>
+
+            <div
+              className="reel-inner"
+              ref={reelInnerRef}
+            >
+              <video
+                ref={videoRef}
+                className="hero-reel-video"
+                src={HERO_REEL}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Selected video editing work"
+                onPlay={() => {
+                  setIsPlaying(true);
+                }}
+                onPause={() => {
+                  setIsPlaying(false);
+                }}
+              />
+
+              <div
+                className="reel-shade"
+                aria-hidden="true"
+              />
+
+              <div className="reel-center-meta">
+                <span>EDIT / SHORT-FORM</span>
+                <strong>
+                  {isPlaying
+                    ? "PLAYING"
+                    : "PAUSED"}
+                </strong>
+              </div>
+
+              <div className="reel-controls">
+                <button
+                  className="reel-play"
+                  type="button"
+                  onClick={togglePlayback}
+                  aria-label={
+                    isPlaying
+                      ? "Pause selected reel"
+                      : "Play selected reel"
+                  }
+                >
+                  {isPlaying
+                    ? "PAUSE"
+                    : "PLAY REEL"}
+
+                  <span>
+                    {isPlaying
+                      ? "Ⅱ"
+                      : "▶"}
+                  </span>
+                </button>
+
+                <button
+                  className="reel-sound"
+                  type="button"
+                  onClick={toggleMute}
+                  aria-label={
+                    isMuted
+                      ? "Turn sound on"
+                      : "Turn sound off"
+                  }
+                >
+                  {isMuted
+                    ? "SOUND OFF"
+                    : "SOUND ON"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="reel-info">
+            <span>SELECTED WORK</span>
+            <strong>
+              SHORT-FORM • SOCIAL • STORY
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero-scroll">
+        <span>SCROLL</span>
+        <i />
+      </div>
+    </section>
+  );
 }

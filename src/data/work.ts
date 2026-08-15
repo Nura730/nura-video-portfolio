@@ -38,9 +38,33 @@ export const workItems: WorkItem[] = [
   },
 
   // =========================================================
-  // MORE TRIPXPLO WORK
+  // MORE WORK — PREVIEW ITEMS (STABLE FIRST 6)
   // =========================================================
 
+  {
+    id: "tripxplo-03",
+    title: "7 PAGODAS — MAHABALIPURAM",
+    client: "TRIPXPLO",
+    category: "TRAVEL / HERITAGE",
+    video: "/videos/tripxplo-03.mp4",
+    featured: false,
+  },
+  {
+    id: "personal-13",
+    title: "CHARACTER EDIT",
+    client: "PERSONAL PROJECT",
+    category: "GRAPHIC / MOTION",
+    video: "/videos/personal-13.mp4",
+    featured: false,
+  },
+  {
+    id: "personal-09",
+    title: "CREATIVE COMPOSITE",
+    client: "PERSONAL PROJECT",
+    category: "COMPOSITING / MOTION",
+    video: "/videos/personal-09.mp4",
+    featured: false,
+  },
   {
     id: "tripxplo-01",
     title: "MALDIVES VS ANDAMAN",
@@ -50,13 +74,26 @@ export const workItems: WorkItem[] = [
     featured: false,
   },
   {
-    id: "tripxplo-03",
-    title: "7 PAGODAS — MAHABALIPURAM",
-    client: "TRIPXPLO",
-    category: "TRAVEL / HERITAGE",
-    video: "/videos/tripxplo-03.mp4",
+    id: "college-14",
+    title: "COLLEGE STORY",
+    client: "COLLEGE PROJECT",
+    category: "TYPOGRAPHY / MOTION",
+    video: "/videos/college-14.mp4",
     featured: false,
   },
+  {
+    id: "personal-07",
+    title: "FLOAT",
+    client: "PERSONAL PROJECT",
+    category: "VFX / CREATIVE EDIT",
+    video: "/videos/personal-07.mp4",
+    featured: false,
+  },
+
+  // =========================================================
+  // ADDITIONAL WORK ITEMS (REVEALED ON EXPAND)
+  // =========================================================
+
   {
     id: "tripxplo-04",
     title: "MANALI HONEYMOON",
@@ -89,27 +126,6 @@ export const workItems: WorkItem[] = [
     video: "/videos/tripxplo-09.mp4",
     featured: false,
   },
-
-  // =========================================================
-  // PERSONAL / COLLEGE WORK
-  // =========================================================
-
-  {
-    id: "personal-13",
-    title: "CHARACTER EDIT",
-    client: "PERSONAL PROJECT",
-    category: "GRAPHIC / MOTION",
-    video: "/videos/personal-13.mp4",
-    featured: false,
-  },
-  {
-    id: "personal-09",
-    title: "CREATIVE COMPOSITE",
-    client: "PERSONAL PROJECT",
-    category: "COMPOSITING / MOTION",
-    video: "/videos/personal-09.mp4",
-    featured: false,
-  },
   {
     id: "personal-03",
     title: "CINEMATIC TRAVEL",
@@ -127,14 +143,6 @@ export const workItems: WorkItem[] = [
     featured: false,
   },
   {
-    id: "college-14",
-    title: "COLLEGE STORY",
-    client: "COLLEGE PROJECT",
-    category: "TYPOGRAPHY / MOTION",
-    video: "/videos/college-14.mp4",
-    featured: false,
-  },
-  {
     id: "personal-01",
     title: "CINEMATIC JOURNEY",
     client: "PERSONAL PROJECT",
@@ -142,20 +150,6 @@ export const workItems: WorkItem[] = [
     video: "/videos/personal-01.mp4",
     featured: false,
   },
-
-  {
-  id: "personal-07",
-  title: "FLOAT",
-  client: "PERSONAL PROJECT",
-  category: "VFX / CREATIVE EDIT",
-  video: "/videos/personal-07.mp4",
-  featured: false,
-},
-
-  // =========================================================
-  // OTHER WORK
-  // =========================================================
-
   {
     id: "kavithai-01",
     title: "KAVITHAI — TEXT & MOTION",

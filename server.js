@@ -1,9 +1,9 @@
 import express from "express";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import cors from "cors";
+import { Resend } from "resend";
 
 dotenv.config();
 
@@ -13,7 +13,25 @@ const PORT = Number(process.env.PORT) || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/*
+ * =========================================================
+ * RESEND
+ * =========================================================
+ */
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const RESEND_FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+
+/*
+ * =========================================================
+ * MIDDLEWARE
+ * =========================================================
+ */
+
 app.use(express.json({ limit: "50kb" }));
+
 app.use(
   cors({
     origin: [
@@ -27,8 +45,6 @@ app.use(
  * =========================================================
  * RATE LIMITING
  * =========================================================
- *
- * Lightweight in-memory protection for the portfolio.
  *
  * Maximum:
  * 5 submissions from the same IP
@@ -106,22 +122,6 @@ function validateContactData(body) {
 
 /*
  * =========================================================
- * EMAIL TRANSPORTER
- * =========================================================
- *
- * Gmail SMTP using a Google App Password.
- */
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD,
-  },
-});
-
-/*
- * =========================================================
  * CONTACT API
  * =========================================================
  */
@@ -181,6 +181,7 @@ app.post("/api/contact", async (req, res) => {
     const cleanName = name.trim();
     const cleanEmail = email.trim();
     const cleanVideoType = videoType.trim();
+
     const cleanDeadline =
       typeof deadline === "string"
         ? deadline.trim()
@@ -200,27 +201,23 @@ app.post("/api/contact", async (req, res) => {
 
     /*
      * =====================================================
-     * 4. EMAIL TO PORTFOLIO OWNER
+     * 4. SEND ENQUIRY TO PORTFOLIO OWNER
      * =====================================================
-     *
-     * This is the important notification email.
-     *
-     * Reply-To is the visitor's email.
-     *
-     * Therefore:
-     *
-     * You receive the enquiry.
-     * Pressing "Reply" replies directly to the visitor.
      */
 
-    await transporter.sendMail({
-      from: `"Nura Portfolio" <${process.env.EMAIL_USER}>`,
-      to: process.env.CONTACT_RECEIVER,
-      replyTo: cleanEmail,
+    console.log(
+      `Sending enquiry email for ${cleanName} <${cleanEmail}>`
+    );
 
-      subject: `New Video Editing Project — ${cleanName}`,
+    const { data: enquiryData, error: enquiryError } =
+      await resend.emails.send({
+        from: `Nura Portfolio <${RESEND_FROM_EMAIL}>`,
+        to: [process.env.CONTACT_RECEIVER],
+        replyTo: cleanEmail,
 
-      text: `
+        subject: `New Video Editing Project — ${cleanName}`,
+
+        text: `
 New project enquiry from your portfolio.
 
 Name:
@@ -246,88 +243,111 @@ ${cleanProject}
 
 --------------------------------
 Sent from Nura Video Portfolio
-      `.trim(),
+        `.trim(),
 
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
-          <h2>New Video Editing Project</h2>
+        html: `
+          <div
+            style="
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #222;
+            "
+          >
+            <h2>New Video Editing Project</h2>
 
-          <p>A new project enquiry was submitted through your portfolio.</p>
+            <p>
+              A new project enquiry was submitted
+              through your portfolio.
+            </p>
 
-          <hr />
+            <hr />
 
-          <p>
-            <strong>Name:</strong><br />
-            ${cleanName}
-          </p>
+            <p>
+              <strong>Name:</strong><br />
+              ${cleanName}
+            </p>
 
-          <p>
-            <strong>Email:</strong><br />
-            <a href="mailto:${cleanEmail}">${cleanEmail}</a>
-          </p>
+            <p>
+              <strong>Email:</strong><br />
+              <a href="mailto:${cleanEmail}">
+                ${cleanEmail}
+              </a>
+            </p>
 
-          <p>
-            <strong>Video Type:</strong><br />
-            ${cleanVideoType}
-          </p>
+            <p>
+              <strong>Video Type:</strong><br />
+              ${cleanVideoType}
+            </p>
 
-          <p>
-            <strong>Deadline:</strong><br />
-            ${cleanDeadline || "Not specified"}
-          </p>
+            <p>
+              <strong>Deadline:</strong><br />
+              ${cleanDeadline || "Not specified"}
+            </p>
 
-          <p>
-            <strong>Budget:</strong><br />
-            ${cleanBudget || "Not specified"}
-          </p>
+            <p>
+              <strong>Budget:</strong><br />
+              ${cleanBudget || "Not specified"}
+            </p>
 
-          <p>
-            <strong>Social / Channel:</strong><br />
-            ${cleanSocial || "Not specified"}
-          </p>
+            <p>
+              <strong>Social / Channel:</strong><br />
+              ${cleanSocial || "Not specified"}
+            </p>
 
-          <p>
-            <strong>Project + References:</strong><br />
-            ${cleanProject.replace(/\n/g, "<br />")}
-          </p>
+            <p>
+              <strong>Project + References:</strong><br />
+              ${cleanProject.replace(/\n/g, "<br />")}
+            </p>
 
-          <hr />
+            <hr />
 
-          <p>
-            Sent from <strong>Nura Video Portfolio</strong>.
-          </p>
-        </div>
-      `,
-    });
+            <p>
+              Sent from <strong>Nura Video Portfolio</strong>.
+            </p>
+          </div>
+        `,
+      });
+
+    if (enquiryError) {
+      console.error(
+        "Resend enquiry email error:",
+        enquiryError
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Unable to send your enquiry right now. Please try again or contact me directly.",
+      });
+    }
+
+    console.log(
+      `Enquiry email sent successfully. ID: ${enquiryData?.id || "unknown"}`
+    );
 
     /*
      * =====================================================
      * 5. CONFIRMATION EMAIL TO CLIENT
      * =====================================================
      *
-     * This email is intentionally separate from the main
-     * enquiry email.
+     * This is intentionally separate.
      *
-     * If this email fails because the visitor entered an
-     * invalid/non-existent address, the enquiry itself has
-     * STILL been successfully delivered to you.
-     *
-     * Therefore we do NOT fail the whole API request here.
+     * If the confirmation fails, the main enquiry has
+     * already reached Nura, so we still return success.
      */
 
     if (process.env.SEND_CONFIRMATION_EMAIL !== "false") {
       try {
-        await transporter.sendMail({
-          from: `"Nura — Video Editor" <${process.env.EMAIL_USER}>`,
-          to: cleanEmail,
-
-          /*
-           * If the client presses Reply, the reply should
-           * come back to Nura.
-           */
+        const {
+          data: confirmationData,
+          error: confirmationError,
+        } = await resend.emails.send({
+          from: `Nura — Video Editor <${RESEND_FROM_EMAIL}>`,
+          to: [cleanEmail],
           replyTo: process.env.CONTACT_RECEIVER,
 
-          subject: "Thanks for reaching out — Nura Video Editor",
+          subject:
+            "Thanks for reaching out — Nura Video Editor",
 
           text: `
 Hi ${cleanName},
@@ -487,18 +507,19 @@ Nura Video Portfolio
           `,
         });
 
-        console.log(
-          `Confirmation email sent successfully to ${cleanEmail}`
-        );
+        if (confirmationError) {
+          console.error(
+            "Confirmation email failed:",
+            confirmationError
+          );
+        } else {
+          console.log(
+            `Confirmation email sent successfully to ${cleanEmail}. ID: ${
+              confirmationData?.id || "unknown"
+            }`
+          );
+        }
       } catch (confirmationError) {
-        /*
-         * The main enquiry was already delivered.
-         *
-         * A failed confirmation should not make the
-         * frontend tell the user that the whole submission
-         * failed.
-         */
-
         console.error(
           "Confirmation email failed:",
           confirmationError
@@ -538,12 +559,6 @@ Nura Video Portfolio
  * =========================================================
  * SERVE VITE BUILD
  * =========================================================
- *
- * This allows the same Express server to serve the
- * production React application after:
- *
- * npm run build
- * npm run server
  */
 
 const distPath = path.join(__dirname, "dist");
@@ -560,28 +575,24 @@ app.get("/{*splat}", (_req, res) => {
  * =========================================================
  */
 
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Contact backend running on port ${PORT}`);
 
-  if (
-    process.env.EMAIL_USER &&
-    process.env.EMAIL_APP_PASSWORD
-  ) {
-    try {
-      await transporter.verify();
-
-      console.log(
-        "Email transporter verified successfully."
-      );
-    } catch (error) {
-      console.error(
-        "Email transporter verification failed:",
-        error
-      );
-    }
+  if (process.env.RESEND_API_KEY) {
+    console.log("Resend API key detected successfully.");
   } else {
-    console.warn(
-      "EMAIL_USER or EMAIL_APP_PASSWORD is missing."
+    console.error(
+      "RESEND_API_KEY is missing."
+    );
+  }
+
+  if (process.env.CONTACT_RECEIVER) {
+    console.log(
+      `Contact receiver configured: ${process.env.CONTACT_RECEIVER}`
+    );
+  } else {
+    console.error(
+      "CONTACT_RECEIVER is missing."
     );
   }
 });
